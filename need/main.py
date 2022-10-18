@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from msilib.schema import tables
+from this import s
 LOG_FORMAT = "%(asctime)s>%(levelname)s>PID:%(process)d %(thread)d>%(module)s>%(funcName)s>%(lineno)d>%(message)s"
 logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT, )
 
@@ -168,18 +169,19 @@ class create_shuoming(QtCore.QThread):
         #在用户选择的目录中查找大纲文档
         self.sin_out.emit('打开测评大纲文档...')
         
-        #使用docx打开-记得关闭
+        #使用win32com打开-记得关闭
+        #打开word应用
+        self.w = DispatchEx('Word.Application')
+        #w.visible=0
+        self.w.DisplayAlerts = 0
         try:
-            doc = docx.Document(self.parent.open_file_name[0])
+            dagangfile = self.w.Documents.Open(self.parent.open_file_name[0])
         except:
             self.sin_out.emit('open failed:选择的文档')
+            self.w.Quit()
             pythoncom.CoUninitialize()
             self.parent.tabWidget.setEnabled(True)
             return
-        
-        #使用win32com打开-记得关闭
-        
-        
         
         self.sin_out.emit('复制测试说明文档模板到本程序所在目录...')
         curpath = Path.cwd() / 'need'
@@ -201,20 +203,26 @@ class create_shuoming(QtCore.QThread):
         data_list = []
         
         #获取表格数量
-        tables = doc.tables
-        dg_tb_count = len(tables)
+        try:
+            csx_tb_count = dagangfile.Tables.Count
+        except:
+            self.sin_out.emit('no table')
+            #QMessageBox.warning(self,'出错了','测试说明文档格式错误或者没有正确表格')
+            dagangfile.Close()
+            self.w.Quit()
+            pythoncom.CoUninitialize()
+            self.parent.tabWidget.setEnabled(True)
+            return
         
         #循环表格
-        ceshixiang_count = 0
-        for i in range(dg_tb_count):
-            self.sin_out.emit('开始提取大纲数据')
-            print(tables[i].cell(0,0).text)
-            if tables[i].cell(0,0).text == "测试项名称":
-                if tables[i].cell(0,2).text == '测试项标识':
-                    tables.select
+        for i in range(csx_tb_count):
+            if dagangfile.Tables[i].Rows.Count > 2:
+                #注意win32com的Cell从1开始不是从0开始
+                if dagangfile.Tables[i].Cell(1, 1).Range.Text.find('测试项名称') != -1:
+                    #获取章节号
                     
-                    
-                    ceshixiang_count += 1 #统计有效测试项个数
+            else:
+                continue
                 
                 
         
