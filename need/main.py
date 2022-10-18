@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-from msilib.schema import tables
-from this import s
 LOG_FORMAT = "%(asctime)s>%(levelname)s>PID:%(process)d %(thread)d>%(module)s>%(funcName)s>%(lineno)d>%(message)s"
 logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT, )
 
