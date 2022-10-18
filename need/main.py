@@ -170,8 +170,8 @@ class create_shuoming(QtCore.QThread):
         #使用win32com打开-记得关闭
         #打开word应用
         self.w = DispatchEx('Word.Application')
-        #w.visible=0
-        self.w.DisplayAlerts = 0
+        self.w.visible=0
+        #self.w.DisplayAlerts = 0
         try:
             dagangfile = self.w.Documents.Open(self.parent.open_file_name[0])
         except:
@@ -218,6 +218,11 @@ class create_shuoming(QtCore.QThread):
                 #注意win32com的Cell从1开始不是从0开始
                 if dagangfile.Tables[i].Cell(1, 1).Range.Text.find('测试项名称') != -1:
                     #获取章节号
+                    dagangfile.Tables[i].Select
+                    self.w.Selection.MoveUp()
+                    a = self.w.Selection.Range.ListFormat.ListString
+                    print(a)
+                    
                     
             else:
                 continue
