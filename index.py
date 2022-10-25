@@ -1,11 +1,18 @@
 # -*- coding: utf-8 -*-
+import sys
 from PyQt5.QtWidgets import QApplication
 from PyQt5 import QtCore
-import sys
 from need.main import userMain
 import qtmodern.styles
 import qtmodern.windows
-
+#以下导入为打包导入所需
+import json
+import docx
+import docxtpl
+import six
+import docxcompose
+import lxml
+import markupsafe
 
 if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)

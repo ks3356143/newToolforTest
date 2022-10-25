@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-from unittest import async_case
-from warnings import catch_warnings
 LOG_FORMAT = "%(asctime)s>%(levelname)s>PID:%(process)d %(thread)d>%(module)s>%(funcName)s>%(lineno)d>%(message)s"
 logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT, )
 
@@ -15,14 +13,11 @@ import sys,re,string
 from pathlib import *
 import shutil
 #导入word文档操作库
-import win32com
-from win32com.client import Dispatch, constants, DispatchEx
-import docx
+from win32com.client import DispatchEx
 from docxtpl import DocxTemplate
 import pythoncom
 #导入QT组件
-from PyQt5 import QtCore,QtGui
-from PyQt5.QtGui import QIntValidator
+from PyQt5 import QtCore
 from PyQt5.QtCore import QTranslator
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import pyqtSignal
@@ -30,7 +25,7 @@ from PyQt5.QtCore import pyqtSignal
 # import pandas as pd
 
 #导入UI转换PY文件
-from need.Ui_GUI import Ui_MainWindow
+from need.UI_GUI import Ui_MainWindow
 #导入工具包文件-时间转换
 from need.utils import get_current_time,get_current_name,get_current_date,get_current_hour
 
@@ -62,6 +57,11 @@ class userMain(QMainWindow,Ui_MainWindow):
         self.create_shuoming_trd.sin_out.connect(self.text_display) #信号绑定输出的区域
         self.pushButton_2.clicked.connect(self.create_shuoming_btn) #点击按钮执行线程
         
+        ##连接大纲追溯
+        self.create_dagang_zhuisu_trd = create_dagang_zhuisu(self) #生成大纲追溯的线程
+        self.create_dagang_zhuisu_trd.sin_out.connect(self.text_display) #信号绑定输出的区域
+        self.pushButton_6.clicked.connect(self.creat_dagang_zhuisu_btn) #点击按钮执行线程
+        
         #自定义信号连接
         
         # 获取状态栏对象
@@ -73,6 +73,7 @@ class userMain(QMainWindow,Ui_MainWindow):
         #~~~~~~~~~~~~~·按钮连接函数~~~~~~~~~~~~~~~~
         ##选择文件按钮连接
         self.pushButton.clicked.connect(self.choose_docx_func)
+        self.pushButton_4.clicked.connect(self.choose_docx_func)
         
 #~~~~~~~~~~~~~~~~~~~~初始化直接运行的函数（也就是起始运行一次）~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -86,6 +87,10 @@ class userMain(QMainWindow,Ui_MainWindow):
     def create_shuoming_btn(self):
         self.create_shuoming_trd.start()
         return
+    
+#大纲追溯线程启动函数
+    def creat_dagang_zhuisu_btn(self):
+        self.create_dagang_zhuisu_trd.start()
     
 #选择文档函数
     def choose_docx_func(self):
@@ -216,7 +221,10 @@ class create_shuoming(QtCore.QThread):
         except:
             self.sin_out.emit('不存在表格！')
             QMessageBox.warning(self.parent,'出错了','测试说明文档格式错误或者没有正确表格')
-            dagangfile.Close()
+            try:
+                dagangfile.Close()
+            except:
+                pass
             self.w.Quit()
             pythoncom.CoUninitialize()
             self.parent.tabWidget.setEnabled(True)
@@ -288,7 +296,8 @@ class create_shuoming(QtCore.QThread):
                                     is_fire_su = fenge[-2]
                                     data['is_begin'] = "1"
                                     data['csxbs'] = zhuan_dict[fenge[-2]]
-                            
+                            if self.parent.lineEdit.text():
+                                data['renyuan'] = self.parent.lineEdit.text()
                             #将data加入data_list
                             data['is_first'] = "1"
                             data_list.append(data)
@@ -381,7 +390,8 @@ class create_shuoming(QtCore.QThread):
                                     is_fire_su = fenge[-2]
                                     data['is_begin'] = "1"
                                     data['csxbs'] = zhuan_dict[fenge[-2]]
-                                    
+                                if self.parent.lineEdit.text():
+                                    data['renyuan'] = self.parent.lineEdit.text()
                                 #加入data_list
                                 data_list.append(data)
                                 yongli_count += 1 #用例计数加一
@@ -401,6 +411,7 @@ class create_shuoming(QtCore.QThread):
             
             #调试查看整体data_list
             #self.sin_out.emit(str(data_list)) 
+            
         #关闭大纲文档（因为以及提取完毕）
         try:
             dagangfile.Close()
@@ -439,3 +450,147 @@ class create_shuoming(QtCore.QThread):
             self.sin_out.emit('stopthread')
             return
         
+##################################################################################
+#大纲生成追踪关系
+##################################################################################
+class create_dagang_zhuisu(QtCore.QThread):
+    sin_out = pyqtSignal(str)
+
+    def __init__(self,parent):
+        super().__init__()
+        self.parent = parent
+        
+    def run(self):
+        self.sin_out.emit("进入大纲追踪线程......")
+        self.sin_out.emit("开始填写追踪......")
+        
+        #如果没有选择路径则退出
+        if not self.parent.open_file_name:
+            self.sin_out.emit('nofile')
+            self.parent.tabWidget.setEnabled(True)
+            return
+        #告诉windows单线程
+        pythoncom.CoInitialize()
+        #在用户选择的目录中查找大纲文档
+        self.sin_out.emit('打开测评大纲文档...')
+        
+        #使用win32com打开-记得关闭
+        #打开word应用
+        self.w = DispatchEx('Word.Application')
+        #self.w.visible=True
+        self.w.DisplayAlerts = 0
+        try:
+            dagangfile = self.w.Documents.Open(self.parent.open_file_name[0])
+        except:
+            self.sin_out.emit('open failed:选择的文档')
+            self.w.Quit()
+            pythoncom.CoUninitialize()
+            self.parent.tabWidget.setEnabled(True)
+            return
+        
+        curpath = Path.cwd() / 'need'
+        zhuisu_path_tmp = curpath / 'document_templates' / '大纲追踪模板.docx'
+        print(zhuisu_path_tmp)
+        
+        if zhuisu_path_tmp.is_file():
+            self.sin_out.emit('已检测到有追溯模板文件...')
+        else:
+            self.sin_out.emit('open failed:选择的文档')
+            return
+        
+        #创建个列表放数据
+        data_list = []
+        
+        try:
+            csx_tb_count = dagangfile.Tables.Count
+            self.sin_out.emit('total:'+ str(csx_tb_count))
+        except:
+            self.sin_out.emit('不存在表格！')
+            QMessageBox.warning(self.parent,'出错了','测试说明文档格式错误或者没有正确表格')
+            try:
+                dagangfile.Close()
+            except:
+                pass
+            self.w.Quit()
+            pythoncom.CoUninitialize()
+            self.parent.tabWidget.setEnabled(True)
+            return
+        
+        for i in range(csx_tb_count):
+            self.sin_out.emit(str(i))
+            #准备填入的data
+            data = {'xq_zhangjie':"",'xq_miaoshu':"",'dg_zhangjie':'',\
+                'mingcheng':'','biaoshi':''}
+            if dagangfile.Tables[i].Rows.Count > 2:
+                #注意win32com的Cell从1开始不是从0开始
+                if dagangfile.Tables[i].Cell(1, 1).Range.Text.find('测试项名称') != -1:               
+                    #一个用例不变内容获取
+                    dagangfile.Tables[i].Rows.First.Select() #获取测试项章节号
+                    zhangjiehao = self.w.Selection.Bookmarks("\headinglevel").\
+                        Range.Paragraphs(1).Range.ListFormat.ListString #获取测试项章节名
+                    zhangjieming = self.w.Selection.Bookmarks("\headinglevel").\
+                        Range.Paragraphs(1).Range.Text.rstrip('\r')
+                    biaoshi = dagangfile.Tables[i].Cell(1,4).Range.Text.rstrip()[:-2]
+                    
+                    #获取需规的章节号和描述
+                    if dagangfile.Tables[i].Cell(2, 1).Range.Text.find("追踪关系") != -1:
+                        zhuizong_tmp = dagangfile.Tables[i].Cell(2, 2).Range.Text[:-2]
+                        print(zhuizong_tmp)
+                        #由于有/的存在，先判断/和隐含需求
+                        if zhuizong_tmp == "/" or zhuizong_tmp == "隐含需求":
+                            print('是斜杠')
+                            data['xq_zhangjie'] = '/'
+                            data['xq_miaoshu'] = '/'
+                        else:
+                            #取到章节号
+                            match_string = re.search("\d(.\d)+", zhuizong_tmp).group()
+                            #然后以章节号分割
+                            match_ming = zhuizong_tmp.split(match_string)[-1]
+                            data['xq_zhangjie'] = match_string
+                            data['xq_miaoshu'] = match_ming
+                        try:
+                            data['dg_zhangjie'] = zhangjiehao
+                            data['mingcheng'] = zhangjieming
+                            data['biaoshi'] = biaoshi
+                            data_list.append(data)
+                        except:
+                            print("获取追踪出错啦！")
+                            pass
+                          
+                    else:
+                        QMessageBox.warning(self.parent,"找不到表格","请确认测试项表格格式是否正确")
+                        self.w.Quit()
+                        pythoncom.CoUninitialize()
+                        self.parent.tabWidget.setEnabled(True)
+        
+        #最后关闭文档
+        try:
+            self.w.Quit()
+            pythoncom.CoUninitialize()
+            self.parent.tabWidget.setEnabled(True)
+        except:
+            QMessageBox.warning(self.parent,"关闭文档失败","关闭文档失败！")
+            return
+        
+        try:
+            tpl_path = Path.cwd() / "need" / "document_templates" / "大纲追踪模板.docx"
+            self.sin_out.emit('导入模板文件路径为：' + str(tpl_path))
+            tpl = DocxTemplate(tpl_path) #模板导入成功
+            
+        except:
+            QMessageBox.warning(self.parent,"出错了","导入模板出错请检查模板文件是否存在或名字不正确")
+            return
+        
+        #开始渲染模板文件
+        try:
+            context = {
+                "tables":data_list,
+            }
+            tpl.render(context)
+            tpl.save("生成的大纲追踪文档.docx")
+            QMessageBox.warning(self.parent,"生成文档成功","请查看当前工具根目录（生成的大纲追踪文档.docx）")
+            self.sin_out.emit('stopthread')
+        except:
+            QMessageBox.warning(self.parent,"生成文档出错","生成文档错误，请确认模板文档是否已打开或格式错误")
+            self.sin_out.emit('stopthread')
+            return
