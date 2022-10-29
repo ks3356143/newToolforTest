@@ -686,15 +686,13 @@ class create_danyuan(QtCore.QThread):
         yongli_num = 0
         hanshuming = ''
         hanshuming_duibi = ''
-        wenjian = ''
-        wenjian_duibi = ''
         for i in range(csx_tb_count):
             self.sin_out.emit('正在处理的表格序号：' + str(yongli_num + 1))
             self.sin_out.emit(str(i))
             #准备填入的data
             data = {'ruanjian_ming':'','ruanjian_biaoshi':'yongli_biaoshi','wenjian_ming':'',\
                 'hanshu_ming':'','bianlian_and_canshu':'','zhuang':[],\
-                    'yuqi_jieguo':'','ceshi_jieguo':'','is_begin':'0','is_wenjian':'0'}
+                    'yuqi_jieguo':'','ceshi_jieguo':'','is_begin':'0'}
             
             #填入用户输入的软件名
             try:
@@ -721,16 +719,6 @@ class create_danyuan(QtCore.QThread):
                     #放入函数名比对
                     if s1 != hanshuming_duibi:
                         hanshuming_duibi = s1
-                        
-                    #再向上看2行
-                    self.w.Selection.MoveUp()
-                    self.w.Selection.MoveUp()
-                    temp = self.w.Selection.Paragraphs(1).Range.Text[:2]
-                    temp2 = self.w.Selection.Paragraphs(1).Range.Text[:-1]
-                    s2 = temp2.split(". ")[-1]
-                    if temp == "文件":
-                        if s2 != wenjian_duibi:
-                            wenjian_duibi = s2
 
             #找章节号
                     
@@ -763,11 +751,6 @@ class create_danyuan(QtCore.QThread):
                         hanshuming = hanshuming_duibi
                         data['is_begin'] = '1'
                     data['hanshu_ming'] = hanshuming_duibi
-                    #文件名获取
-                    if wenjian_duibi != wenjian:
-                        wenjian = wenjian_duibi
-                        data['is_wenjian'] = '1'
-                    data['wenjian_ming'] = wenjian_duibi
                     
                     data_list.append(data)
                     yongli_num += 1 #用例创建加一
@@ -809,6 +792,7 @@ class create_danyuan(QtCore.QThread):
         try:
             context = {
                 "tables":data_list,
+                "wenjian_ming_one":self.parent.lineEdit_4.text()
             }
             tpl.render(context)
             tpl.save("软件单元测试用例记录表.docx")
@@ -818,11 +802,4 @@ class create_danyuan(QtCore.QThread):
             QMessageBox.warning(self.parent,"生成文档出错","生成文档错误，请确认模板文档是否已打开或格式错误")
             self.sin_out.emit('stopthread')
             return
- 
-##################################################################################
-#测试说明追踪以及用例表（从大纲转说明追踪）
-################################################################################## 
-
-##################################################################################
-#测试说明追踪以及用例表（单独说明追踪-2个按钮）
-##################################################################################      
+        
