@@ -11,18 +11,14 @@ if debug==True:
 #导入常规库
 import sys,re,string 
 from pathlib import *
-import shutil
 #导入word文档操作库
 from win32com.client import DispatchEx
 from docxtpl import DocxTemplate
 import pythoncom
 #导入QT组件
 from PyQt5 import QtCore
-from PyQt5.QtCore import QTranslator
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import pyqtSignal
-# #导入数据处理库
-# import pandas as pd
 
 #导入UI转换PY文件
 from need.UI_GUI import Ui_MainWindow
@@ -39,10 +35,11 @@ class userMain(QMainWindow,Ui_MainWindow):
         if debug == True:
             logging.debug("初始化主程序:")
         
-        
         # 实例化翻译家
-        self.trans = QTranslator()
+        self.trans = QtCore.QCoreApplication.translate
         self.setWindowTitle('测试个人工具')
+        
+        #使用翻译家改变PYQT的空间名字等属性self.label_4.setText(self.trans("MainWindow", "文件名（自动识别）："))
         
         #存放文件夹路径变量
         self.open_dirs_name = ''
@@ -618,7 +615,7 @@ class create_danyuan(QtCore.QThread):
     def run(self):
         self.sin_out.emit("进入单元测试SunwiseAUnit转换线程......")
         self.sin_out.emit("开始填写文档......")
-        
+         
         #如果没有选择路径则退出
         if not self.parent.open_file_name:
             self.sin_out.emit('nofile')
@@ -700,7 +697,6 @@ class create_danyuan(QtCore.QThread):
             try:
                 data['ruanjian_ming'] = self.parent.lineEdit_2.text()
                 data['ruanjian_biaoshi'] = self.parent.lineEdit_3.text()
-                data['wenjian_ming'] = self.parent.lineEdit_4.text()
                 
             except:
                 QMessageBox.critical(self.parent,"未填入数据","请先填入软件名和软件标识或.C名称")

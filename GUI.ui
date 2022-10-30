@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>530</height>
+    <height>535</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -175,7 +175,7 @@
          <x>5</x>
          <y>25</y>
          <width>166</width>
-         <height>186</height>
+         <height>192</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -198,16 +198,6 @@
         </item>
         <item>
          <widget class="QLineEdit" name="lineEdit_3"/>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>测试.C文件（待优化）：</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="lineEdit_4"/>
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_7">
@@ -258,7 +248,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
