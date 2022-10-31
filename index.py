@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import sys
 from PyQt5.QtWidgets import QApplication
-from PyQt5 import QtCore
+from PyQt5 import QtCore,QtGui
 from need.main import userMain
 import qtmodern.styles
 import qtmodern.windows
-#以下导入为打包导入所需
+#以下导入为打包导入所需-使用软件
 import json
 import docx
 import docxtpl
@@ -17,6 +17,8 @@ import markupsafe
 if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QApplication(sys.argv)
+    # 设置任务栏软件图标
+    app.setWindowIcon(QtGui.QIcon('Icon.png'))
     win = userMain()
 
     qtmodern.styles.light(app) #还有dark可以选择

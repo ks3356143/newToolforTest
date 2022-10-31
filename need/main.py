@@ -17,17 +17,16 @@ from docxtpl import DocxTemplate
 import pythoncom
 #导入QT组件
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QMainWindow,QFileDialog,QMessageBox
 from PyQt5.QtCore import pyqtSignal
 
 #导入UI转换PY文件
-from need.UI_GUI import Ui_MainWindow
+from need.Ui_GUI import Ui_MainWindow
 #导入工具包文件-时间转换
 from need.utils import get_current_time,get_current_name,get_current_date,get_current_hour
 
 class userMain(QMainWindow,Ui_MainWindow):
     #自定义信号和槽
-    
     
     def __init__(self):
         super().__init__()
@@ -41,6 +40,8 @@ class userMain(QMainWindow,Ui_MainWindow):
         
         #使用翻译家改变PYQT的空间名字等属性self.label_4.setText(self.trans("MainWindow", "文件名（自动识别）："))
         
+        if debug == True:
+            logging.debug("初始化部分全局变量...")
         #存放文件夹路径变量
         self.open_dirs_name = ''
         #存放文件名称路径变量
@@ -416,17 +417,11 @@ class create_shuoming(QtCore.QThread):
             else:
                 QMessageBox.warning(self.parent,'出错了','请检查表格格式')
             
-            #调试查看整体data_list
-            #self.sin_out.emit(str(data_list)) 
-            
         #关闭大纲文档（因为以及提取完毕）
         try:
             dagangfile.Close()
             self.w.Quit()
             pythoncom.CoUninitialize()
-            #处理完毕结束语
-            #self.sin_out.emit('function success')
-            #self.sin_out.emit('请参考当前文件夹下的《测试说明模板.docx》，记得及时更改文件名或者复制备份，防止被覆盖。')
         except:
             self.sin_out.emit('function fail')
             self.w.Quit()
@@ -658,6 +653,7 @@ class create_danyuan(QtCore.QThread):
         try:
             csx_tb_count = danyuanfile.Tables.Count
             self.sin_out.emit('total:'+ str(csx_tb_count))
+            self.sin_out.emit("正在调用word文档操作接口,可能会有点慢...")
         except:
             self.sin_out.emit('不存在表格！')
             QMessageBox.warning(self.parent,'出错了','测试说明文档格式错误或者没有正确表格')
