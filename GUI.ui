@@ -120,21 +120,21 @@
        <item>
         <widget class="QPushButton" name="pushButton_4">
          <property name="text">
-          <string>选择大纲文件</string>
+          <string>选择文件</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_6">
          <property name="text">
-          <string>开始填写</string>
+          <string>大纲追踪关系填写</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_5">
          <property name="text">
-          <string>填写鉴定测评说明追踪</string>
+          <string>测试说明追踪填写（说明文件）</string>
          </property>
         </widget>
        </item>
@@ -254,7 +254,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
