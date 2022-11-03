@@ -17,11 +17,11 @@ from docxtpl import DocxTemplate
 import pythoncom
 #导入QT组件
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QMainWindow,QFileDialog,QMessageBox
+from PyQt5.QtWidgets import QMainWindow,QFileDialog,QMessageBox,QDialog
 from PyQt5.QtCore import pyqtSignal
-
 #导入UI转换PY文件
 from need.Ui_GUI import Ui_MainWindow
+from need import about
 #导入工具包文件-时间转换
 from need.utils import get_current_time,get_current_name,get_current_date,get_current_hour
 
@@ -49,7 +49,7 @@ class userMain(QMainWindow,Ui_MainWindow):
         
         #读取配置文件
         
-        #连接线程函数
+        #~~~~~~~~~~~~~~~连接线程函数~~~~~~~~~~~~~~~
         ##连接大纲生成说明函数
         self.create_shuoming_trd = create_shuoming(self) #生成说明的线程
         self.create_shuoming_trd.sin_out.connect(self.text_display) #信号绑定输出的区域
@@ -70,6 +70,11 @@ class userMain(QMainWindow,Ui_MainWindow):
         self.create_danyuan_trd.sin_out.connect(self.text_display) #信号绑定输出的区域
         self.pushButton_8.clicked.connect(self.creat_danyuan_btn) #点击按钮执行线程
         
+        ##连接根据测试说明生成记录线程
+        self.create_jilu_trd = create_jilu(self) #生成大纲追溯的线程
+        self.create_jilu_trd.sin_out.connect(self.text_display) #信号绑定输出的区域
+        self.pushButton_12.clicked.connect(self.creat_jilu_btn) #点击按钮执行线程
+        
         #自定义信号连接
         
         # 获取状态栏对象
@@ -78,36 +83,74 @@ class userMain(QMainWindow,Ui_MainWindow):
         self.user_statusbar.setSizeGripEnabled(False)
         self.user_statusbar.setStyleSheet("QStatusBar.item{border:10px}")
         
-        #~~~~~~~~~~~~~·按钮连接函数~~~~~~~~~~~~~~~~
+        #~~~~~~~~~~~~~~~按钮连接函数~~~~~~~~~~~~~~~~
         ##选择文件按钮连接
         self.pushButton.clicked.connect(self.choose_docx_func)
         self.pushButton_4.clicked.connect(self.choose_docx_func)
         self.pushButton_7.clicked.connect(self.choose_docx_func)
+        self.pushButton_11.clicked.connect(self.choose_docx_func)
+        #清空显示区
+        self.pushButton_9.clicked.connect(self.clear_textEdit_content)
+        #显示帮助
+        self.pushButton_10.clicked.connect(self.display_help)
+        #~~~~~~~~~~~~~~~导航栏按钮连接函数~~~~~~~~~~~~~~~~
+        #显示关于本软件的菜单
+        self.actionAbout.triggered.connect(self.display_about)
+        #打开文件夹
+        self.actionopen.triggered.connect(self.choose_docx_func)
         
 #~~~~~~~~~~~~~~~~~~~~初始化直接运行的函数（也就是起始运行一次）~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 #~~~~~~~~~~~~~~~~~~~~间接按钮函数，用户点击后操作~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+    #清空显示区函数
+    def clear_textEdit_content(self):
+        self.textBrowser.clear()
+        return
+    #显示帮助函数
+    def display_help(self):
+        txt_path = Path.cwd() / 'need' /'others' /'readme.txt'
+        with open(txt_path, 'r',encoding='utf-8') as f:
+            data = f.read()
+            self.textBrowser.append(data)
+        return
+    #显示关于函数
+    def display_about(self):
+        dlg = QDialog()
+        about_dlg = about.Ui_Dialog()
+        about_dlg.setupUi(dlg)
+        dlg.show()
+        dlg.exec_()
+        print("display_about")
+        return
 
 
 #~~~~~~~~~~~~~~~~~~~~线程区域函数，用于启动线程~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #生成测试说明启动函数
     def create_shuoming_btn(self):
         self.create_shuoming_trd.start()
+        self.tabWidget.setEnabled(False)
         return
     
-#大纲追溯线程启动函数
+# 大纲追溯线程启动函数
     def creat_dagang_zhuisu_btn(self):
         self.create_dagang_zhuisu_trd.start()
+        self.tabWidget.setEnabled(False)
 
 # 说明追溯线程启动函数
     def creat_shuoming_zhuisu_btn(self):
         self.create_shuoming_zhuisu_trd.start()
+        self.tabWidget.setEnabled(False)
         
-#单元测试报告转换为我们的用例线程
+# 单元测试报告转换为我们的用例线程
     def creat_danyuan_btn(self):
         self.create_danyuan_trd.start()
+        self.tabWidget.setEnabled(False)
+        
+# 单元测试报告转换为我们的用例线程
+    def creat_jilu_btn(self):
+        self.create_jilu_trd.start()
+        self.tabWidget.setEnabled(False)
     
 #选择文档函数
     def choose_docx_func(self):
@@ -118,6 +161,7 @@ class userMain(QMainWindow,Ui_MainWindow):
 #关闭线程函数
     def stop_shuoming_thread(self):
         self.create_shuoming_trd.terminate()
+        self.tabWidget.setEnabled(True)
         print("停止线程成功！")
     
 #~~~~~~~~~~~~~~~~~~~~显示函数~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -321,7 +365,8 @@ class create_shuoming(QtCore.QThread):
                             self.sin_out.emit('###获取用例序号：{}'.format(yongli_count))
                             self.sin_out.emit('###该用例标识为：{}'.format(data['yongli_biaoshi']))
                         except:
-                            QMessageBox.warning(self.parent,"出错了","获取文档信息出错检查文档格式")
+                            self.sin_out.emit(f'$$$$$$$$$$$$第{str(i+1)}个表格处理失败$$$$$$$$$$$$')
+                            pass
                         
                     elif dagangfile.Tables[i].Cell(4, 2).Range.Paragraphs.Count > 1:
                         
@@ -413,15 +458,8 @@ class create_shuoming(QtCore.QThread):
                                 self.sin_out.emit('###获取用例序号：{}'.format(yongli_count))
                                 self.sin_out.emit('###该用例标识为：{}'.format(data['yongli_biaoshi']))
                         except:
-                            QMessageBox.warning(self.parent,'出错了','请检查大纲格式如（冒号）（行数）！，\
-                                这会导致一个测试项生成失败，但不影响其他测试项有运行！')
-
-                    else:
-                        QMessageBox.warning(self.parent,'出错了','请检查大纲行数是否按要求')
-                        continue
-                    
-            else:
-                QMessageBox.warning(self.parent,'出错了','请检查表格格式')
+                            self.sin_out.emit(f'$$$$$$$$$$$$第{str(i+1)}个表格处理失败$$$$$$$$$$$$')
+                            pass
             
         #关闭大纲文档（因为以及提取完毕）
         try:
@@ -567,9 +605,9 @@ class create_dagang_zhuisu(QtCore.QThread):
                                             xuqiu_dict['xq_miaoshu'] = match_ming.lstrip(" ")
                                             data['xuqiu'].append(xuqiu_dict)
                                         except:
-                                            QMessageBox.warning(self.parent, '追踪关系错误', "追踪关系没有写章节号务必请有一个章节号")
+                                            self.sin_out.emit(f'$$$$$$$$$$$$第{str(i+1)}个表格无章节号$$$$$$$$$$$$')
                                             self.sin_out.emit("转换终止！请检查表格中追踪关系有无章节号")
-                                            return
+                                            pass
                                     else:
                                         try:
                                             match_string = re.search("\d(.\d)+", item).group()
@@ -578,9 +616,9 @@ class create_dagang_zhuisu(QtCore.QThread):
                                             xuqiu_dict['xq_miaoshu'] = match_ming.lstrip(" ")
                                             data2['xuqiu'].append(xuqiu_dict)
                                         except:
-                                            QMessageBox.warning(self.parent, '追踪关系错误', "追踪关系没有写章节号务必请有一个章节号")
+                                            self.sin_out.emit(f'$$$$$$$$$$$$第{str(i+1)}个表格无章节号$$$$$$$$$$$$')
                                             self.sin_out.emit("转换终止！请检查表格中追踪关系有无章节号")
-                                            return
+                                            pass
 
                             #如果追踪关系行数小于1行的情况
                             else:
@@ -599,13 +637,9 @@ class create_dagang_zhuisu(QtCore.QThread):
                             data2_list.append(data2)
                         except:
                             print("获取追踪出错啦！")
+                            self.sin_out.emit(f'$$$$$$$$$$$$第{str(i+1)}个表格追踪处理失败$$$$$$$$$$$$')
                             pass
                           
-                    else:
-                        QMessageBox.warning(self.parent,"找不到表格","请确认测试项表格格式是否正确")
-                        self.w.Quit()
-                        pythoncom.CoUninitialize()
-                        self.parent.tabWidget.setEnabled(True)
         
         #最后关闭文档
         try:
@@ -742,7 +776,7 @@ class create_danyuan(QtCore.QThread):
                 self.w.Quit()
                 pythoncom.CoUninitialize()
                 self.parent.tabWidget.setEnabled(True)
-                return
+                pass
             
             #找到函数名
             if danyuanfile.Tables[i].Rows.Count > 2:
@@ -931,72 +965,89 @@ class create_shuoming_zhuisu(QtCore.QThread):
         data = {'dg_zhangjie': '', 'mingcheng': '','biaoshi': '', 'yongli':[],'index':0}
         for i in range(tb_count):
             self.sin_out.emit(str(i))
-            self.sin_out.emit("正在处理第{}个表格...".format(str(i)))
+            self.sin_out.emit("正在处理第{}个表格...".format(str(i+1)))
             print("正在处理第{}个表格...".format(str(i+1)))
             # 准备填入的data
             data2 = {'yongli_ming':'','yongli_biaoshi':'','yongli_zongsu':''}
             yongli_dict = {'yongli_ming':'','yongli_biaoshi':''}
+            yongliming = ''
+            biaoshi = ''
+            zongsu = ''
+            zhui_temp = ''
             
             if shuomingfile.Tables[i].Rows.Count > 2:
                 # 注意win32com的Cell从1开始不是从0开始
                 if shuomingfile.Tables[i].Cell(1, 1).Range.Text.find('测试用例名称') != -1 or \
                     shuomingfile.Tables[i].Cell(2, 1).Range.Text.find('测试用例名称') != -1:
-                    # 一个用例不变内容获取
-                    shuomingfile.Tables[i].Rows.First.Select()  # 获取测试项章节号
-                    #############################目前模板不用获取用例章节号暂时省去
-                    # zhangjiehao = self.w.Selection.Bookmarks("\headinglevel"). \
-                    #     Range.Paragraphs(1).Range.ListFormat.ListString  # 获取测试项章节名
-                    ##############################################################
-                    zhangjieming = self.w.Selection.Bookmarks("\headinglevel"). \
-                        Range.Paragraphs(1).Range.Text.rstrip('\r')
-                    yongliming = shuomingfile.Tables[i].Cell(1, 2).Range.Text.rstrip()[:-2]
-                    biaoshi = shuomingfile.Tables[i].Cell(1, 4).Range.Text.rstrip()[:-2]
-                    zongsu = shuomingfile.Tables[i].Cell(3, 2).Range.Text.rstrip()[:-2]
-                    yongli_dict['yongli_ming'] = yongliming
-                    yongli_dict['yongli_biaoshi'] = biaoshi
-                    data2['yongli_ming'] = yongliming
-                    data2['yongli_biaoshi'] = biaoshi
-                    data2['yongli_zongsu'] = zongsu
-                    data2_list.append(data2)
-                    # 获取大纲的章节号和用例名，而且data按自己的来
-                    ## 首先取出追踪关系
-                    zhui_temp = shuomingfile.Tables[i].Cell(2,2).Range.Text.rstrip()[:-2]
-                    ## 按python行进行分割为列表
-                    zhui_list = zhui_temp.split("\r")
-                    if len(zhui_list) == 3:
-                        if zhui_list[1].find("需求") != -1:
-                            #使用re模块正则表达式
-                            match_string = re.search("\d(.\d)+",zhui_list[1]).group()
-                            match_ming = zhui_list[1].split(match_string)[-1]
-                            #使用re.sub模块替换为空
-                            rules = "[)(）（] "
-                            match_ming = re.sub(rules,'',match_ming)
-                            if zhui_list[2]:
-                                rules = ":"
-                                dg_biaoshi_temp = re.sub(rules,'：',zhui_list[2])
-                                dg_biaoshi = dg_biaoshi_temp.split("：")[-1]
-                            #判断是否是新的测试项，如果是新的索引index加1，创建新dict进入
-                            if zhangjieming == csx_name:
-                                data['yongli'].append(yongli_dict)
-                            #如果测试项是新的
-                            else:
-                                data['dg_zhangjie'] = match_string
-                                data['mingcheng'] = match_ming
-                                data['biaoshi'] = dg_biaoshi
-                                data_list.append(data)
-                                data_index = data['index'] + 1
-                                csx_name = zhangjieming
-                                #清空data数据
-                                data = {'dg_zhangjie': '', 'mingcheng': '','biaoshi': '', 'yongli':[],'index':data_index}
-                                self.sin_out.emit("已处理第{}个测试项...".format(data['index']))
-                                       
+                    try:    
+                        #取出cell(1,,1)的数据
+                        table_heard = shuomingfile.Tables[i].Cell(1, 1).Range.Text
+                        if table_heard.find("测试用例名称") != -1:
+                            yongliming = shuomingfile.Tables[i].Cell(1, 2).Range.Text.rstrip()[:-2]
+                            biaoshi = shuomingfile.Tables[i].Cell(1, 4).Range.Text.rstrip()[:-2]
+                            zongsu = shuomingfile.Tables[i].Cell(3, 2).Range.Text.rstrip()[:-2]
+                            zhui_temp = shuomingfile.Tables[i].Cell(2,2).Range.Text.rstrip()[:-2]
+                        elif table_heard.find('用例') != -1:
+                            yongliming = shuomingfile.Tables[i].Cell(2, 2).Range.Text.rstrip()[:-2]
+                            biaoshi = shuomingfile.Tables[i].Cell(2, 4).Range.Text.rstrip()[:-2]
+                            zongsu = shuomingfile.Tables[i].Cell(4, 2).Range.Text.rstrip()[:-2]
+                            zhui_temp = shuomingfile.Tables[i].Cell(3,2).Range.Text.rstrip()[:-2]
                         else:
-                            QMessageBox.warning(self.parent, "表格追踪关系没找到需求两个字", "请检查{}用例表格".format(yongliming))
+                            self.sin_out.emit("未找到合适的填写数据，退出处理")
+                            print("未找到合适的填写数据")
+                            self.w.Quit()
+                            pythoncom.CoUninitialize()
+                            self.parent.tabWidget.setEnabled(True)
                             return
-                    else:
-                        QMessageBox.warning(self.parent, "表格格式错误", "追踪关系单元格格式识别错误，请检查{}用例表格".format(yongliming))
-                        return
-                    
+                        shuomingfile.Tables[i].Rows.First.Select()  # 获取测试项章节号
+                        #############################目前模板不用获取用例章节号暂时省去
+                        # zhangjiehao = self.w.Selection.Bookmarks("\headinglevel"). \
+                        #     Range.Paragraphs(1).Range.ListFormat.ListString  # 获取测试项章节名
+                        ##############################################################
+                        zhangjieming = self.w.Selection.Bookmarks("\headinglevel"). \
+                            Range.Paragraphs(1).Range.Text.rstrip('\r')
+                        
+                        yongli_dict['yongli_ming'] = yongliming
+                        yongli_dict['yongli_biaoshi'] = biaoshi
+                        data2['yongli_ming'] = yongliming
+                        data2['yongli_biaoshi'] = biaoshi
+                        data2['yongli_zongsu'] = zongsu
+                        data2_list.append(data2)
+                        print("当前yongli_dict为：",yongli_dict)
+                        # 获取大纲的章节号和用例名，而且data按自己的来
+                        ## 按python行进行分割为列表
+                        zhui_list = zhui_temp.split("\r")
+                        if len(zhui_list) == 3:
+                            if zhui_list[1].find("需求") != -1:
+                                #使用re模块正则表达式
+                                match_string = re.search("\d(.\d)+",zhui_list[1]).group()
+                                match_ming = zhui_list[1].split(match_string)[-1]
+                                #使用re.sub模块替换为空
+                                rules = "[)(）（] "
+                                match_ming = re.sub(rules,'',match_ming)
+                                if zhui_list[2]:
+                                    rules = ":"
+                                    dg_biaoshi_temp = re.sub(rules,'：',zhui_list[2])
+                                    dg_biaoshi = dg_biaoshi_temp.split("：")[-1]
+                                #判断是否是新的测试项，如果是新的索引index加1，创建新dict进入
+                                if zhangjieming == csx_name:
+                                    data['yongli'].append(yongli_dict)
+                                #如果测试项是新的
+                                else:
+                                    data['yongli'].append(yongli_dict)
+                                    data['dg_zhangjie'] = match_string
+                                    data['mingcheng'] = match_ming
+                                    data['biaoshi'] = dg_biaoshi
+                                    data_list.append(data)
+                                    data_index = data['index'] + 1
+                                    csx_name = zhangjieming
+                                    #清空data数据
+                                    data = {'dg_zhangjie': '', 'mingcheng': '','biaoshi': '', 'yongli':[],'index':data_index}
+                                    self.sin_out.emit("已处理第{}个测试项...".format(data['index']))
+                                        
+                    except:
+                        self.sin_out.emit(f'$$$$$$$$$$$$第{str(i+1)}个表格，获取单元格内容不存在$$$$$$$$$$$$')
+                        pass
         # 最后关闭文档
         try:
             self.w.Quit()
@@ -1023,9 +1074,184 @@ class create_shuoming_zhuisu(QtCore.QThread):
             }
             tpl.render(context)
             tpl.save("说明追踪文档.docx")
-            QMessageBox.warning(self.parent, "生成文档成功", "请查看当前工具根目录（说明追踪文档.docx）")
+            QMessageBox.about(self.parent, "生成文档成功", "请查看当前工具根目录（说明追踪文档.docx）")
             self.sin_out.emit('stopthread')
         except:
             QMessageBox.warning(self.parent, "生成文档出错", "生成文档错误，请确认模板文档是否已打开或格式错误")
             self.sin_out.emit('stopthread')
             return
+        
+##################################################################################
+#根据说明生成测试记录线程
+##################################################################################
+class create_jilu(QtCore.QThread):
+    sin_out = pyqtSignal(str)
+
+    def __init__(self,parent):
+        super().__init__()
+        self.parent = parent
+        
+    def run(self):
+        #用来储存章节号转换
+        zhuan_dict = {'DC':'文档审查','SU':'功能测试','CR':'代码审查','SA':'静态分析','AC':'静态测试',\
+            'IO':'接口测试','SE':'安全性测试','BT':'边界测试','RE':'恢复性测试','ST':'强度测试',\
+                'AT':'余量测试','GUI':'人机交互界面测试','DP':'数据处理测试','JR':'兼容性测试',\
+                    'LG':'逻辑测试'}
+        
+        self.sin_out.emit("进入根据说明转换记录线程......")
+        self.sin_out.emit("开始转换......")
+        #如果没有选择文件则退出
+        if not self.parent.open_file_name:
+            self.sin_out.emit('nofile')
+            self.parent.tabWidget.setEnabled(True)
+            return
+        pythoncom.CoInitialize()
+        self.sin_out.emit('打开说明文档...')
+        self.w = DispatchEx('Word.Application')
+        self.w.DisplayAlerts = 0
+        try:
+            shuomingfile = self.w.Documents.Open(self.parent.open_file_name[0])
+        except:
+            self.sin_out.emit('open failed:选择的文档')
+            self.w.Quit()
+            pythoncom.CoUninitialize()
+            self.parent.tabWidget.setEnabled(True)
+            return
+        self.sin_out.emit('复制测试记录文档模板到本程序所在目录...')
+        curpath = Path.cwd() / 'need'
+        shuoming_path_tmp = curpath / 'document_templates' / '说明生成记录模板.docx'
+        if shuoming_path_tmp.is_file():
+            self.sin_out.emit('已检测到有记录模板文件...')
+        else:
+            self.sin_out.emit('open failed:选择的文档')
+            return
+        #创建一个字典来储存单个用例
+        data_list = []
+        #获取表格数量
+        try:
+            csx_tb_count = shuomingfile.Tables.Count
+            self.sin_out.emit('total:'+ str(csx_tb_count))
+        except:
+            self.sin_out.emit('不存在表格，请检查文档！')
+            QMessageBox.warning(self.parent,'出错了','测试说明文档格式错误或者没有正确表格')
+            try:
+                shuomingfile.Close()
+            except:
+                pass
+            self.w.Quit()
+            pythoncom.CoUninitialize()
+            self.parent.tabWidget.setEnabled(True)
+            return
+        
+        #用来储存章节号中的DC、SU等标识，用于章节号判断
+        is_type_su = ""
+        #储存章节号标志
+        is_fire_su = ""
+        for i in range(csx_tb_count):
+            self.sin_out.emit(str(i))
+            self.sin_out.emit("正在处理第{}个表格".format(i+1))
+            if shuomingfile.Tables[i].Rows.Count > 2:
+                if shuomingfile.Tables[i].Cell(2, 1).Range.Text.find('测试用例名称') != -1:               
+                    #一个用例不变内容获取
+                    try:
+                        shuomingfile.Tables[i].Rows.First.Select()
+                        #获取章节名，用于判断
+                        zhangjieming = self.w.Selection.Bookmarks("\headinglevel").\
+                            Range.Paragraphs(1).Range.Text.rstrip('\r')
+                        #获取表格基本信息
+                        mingcheng = shuomingfile.Tables[i].Cell(2,2).Range.Text[:-2]
+                        biaoshi = shuomingfile.Tables[i].Cell(2,4).Range.Text[:-2]
+                        self.sin_out.emit(f"正在处理{biaoshi}用例{mingcheng}")
+                        zhuizong = shuomingfile.Tables[i].Cell(3,2).Range.Text[:-2]
+                        zongsu = shuomingfile.Tables[i].Cell(4,2).Range.Text[:-2]
+                        chushihua = shuomingfile.Tables[i].Cell(5,2).Range.Text[:-2]
+                        qianti = shuomingfile.Tables[i].Cell(6,2).Range.Text[:-2]
+
+                        #缓存一个data数据
+                        data = {'mingcheng':'','biaoshi':'','zhuizong':'','is_first':'0',\
+                            'zongsu':'','chushihua':'','qianti':'','zuhe':[],'is_begin':'0',\
+                                'csx_type':'','csx_name':''}
+                        #获取步骤和预期
+                        step_count = shuomingfile.Tables[i].Rows.Count - 11
+                        for j in range(step_count):
+                            buzhou_dict = {'buzhou':"",'yuqi':"",'xuhao':''}
+                            buzhou_dict['buzhou'] = shuomingfile.Tables[i].Cell(j+9,2).Range.Text[:-2]
+                            buzhou_dict['yuqi'] = shuomingfile.Tables[i].Cell(j+9,3).Range.Text[:-2]
+                            buzhou_dict['xuhao'] = str(j+1)
+                            data['zuhe'].append(buzhou_dict)
+                            
+                        #开始判断当前是否为测试项的第一个，如果是第一个则is_first改为1
+                        if is_fire_su != zhangjieming:
+                            is_fire_su = zhangjieming
+                            data['is_first'] = '1'
+                            
+                        #判断测试类型，这里从标识里面获取
+                        biaoshi_list = biaoshi.split("_")
+                        print('当前取的类型列表分割：',biaoshi_list)
+                        if len(biaoshi_list) >= 4:
+                            biaoshi_tmp = biaoshi_list[-3]
+                        else:
+                            biaoshi_tmp = biaoshi_list[1]
+                        if biaoshi_tmp != is_type_su:
+                            is_type_su = biaoshi_tmp
+                            data['is_begin'] = '1'
+                            if zhuan_dict[biaoshi_tmp] == '文档审查' or  zhuan_dict[biaoshi_tmp] == '代码审查' or \
+                                zhuan_dict[biaoshi_tmp] == '静态分析':
+                                data['is_first'] = '0'
+                            
+                        #data补全
+                        data['mingcheng'] = mingcheng
+                        data['biaoshi'] = biaoshi
+                        data['zhuizong'] = zhuizong.replace('\r','\n')
+                        data['zongsu'] = zongsu
+                        data['chushihua'] = chushihua
+                        data['qianti'] = qianti
+                        data['csx_type'] = zhuan_dict[biaoshi_tmp]
+                        data['csx_name'] = zhangjieming
+                        data_list.append(data)
+                        self.sin_out.emit("处理完毕{}用例".format(biaoshi))
+                    except:
+                        self.sin_out.emit(f'错误！第{i+1}个表格处理失败!')
+                    
+                    
+        #关闭大纲文档（因为以及提取完毕）
+        try:
+            shuomingfile.Close()
+            self.w.Quit()
+            pythoncom.CoUninitialize()
+        except:
+            self.sin_out.emit('function fail')
+            self.w.Quit()
+            pythoncom.CoUninitialize()
+            return
+    
+        #打开模板文件进行渲染，然后就是用docxtpl生成用例
+        try:
+            tpl_path = Path.cwd() / "need" / "document_templates" / "说明生成记录模板.docx"
+            self.sin_out.emit('导入模板文件路径为：' + str(tpl_path))
+            tpl = DocxTemplate(tpl_path) #模板导入成功
+            
+        except:
+            QMessageBox.warning(self.parent,"出错了","导入模板出错请检查模板文件是否存在或名字不正确")
+            return
+        
+        #开始渲染模板文件-有2层循环
+        try:
+            context = {
+                "tables":data_list,
+                "cs_renyuan":self.parent.lineEdit_4.text(),
+                "jc_renyuan":self.parent.lineEdit_5.text(),
+                "shijian":self.parent.lineEdit_6.text(),
+            }
+            tpl.render(context)
+            tpl.save("生成的测试记录文档.docx")
+            QMessageBox.warning(self.parent,"生成文档成功","请查看当前工具根目录（生成的测试记录文档.docx）")
+            self.sin_out.emit('stopthread')
+        except:
+            QMessageBox.warning(self.parent,"生成文档出错","生成文档错误，请确认模板文档是否已打开或格式错误")
+            self.sin_out.emit('stopthread')
+            return
+    
+##################################################################################
+#根据测试记录反向生成说明（详细）
+##################################################################################
