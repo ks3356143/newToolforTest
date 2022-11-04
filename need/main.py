@@ -14,6 +14,9 @@ from pathlib import *
 #导入word文档操作库
 from win32com.client import DispatchEx
 from docxtpl import DocxTemplate
+import docx
+from docx import Document
+import shutil
 import pythoncom
 #导入QT组件
 from PyQt5 import QtCore
@@ -51,36 +54,61 @@ class userMain(QMainWindow,Ui_MainWindow):
         
         #~~~~~~~~~~~~~~~连接线程函数~~~~~~~~~~~~~~~
         ##连接大纲生成说明函数
-        self.create_shuoming_trd = create_shuoming(self) #生成说明的线程
-        self.create_shuoming_trd.sin_out.connect(self.text_display) #信号绑定输出的区域
-        self.pushButton_2.clicked.connect(self.create_shuoming_btn) #点击按钮执行线程
+        self.create_shuoming_trd = create_shuoming(self) 
+        self.create_shuoming_trd.sin_out.connect(self.text_display) 
+        self.pushButton_2.clicked.connect(self.create_shuoming_btn) 
         
         ##连接大纲追溯
-        self.create_dagang_zhuisu_trd = create_dagang_zhuisu(self) #生成大纲追溯的线程
-        self.create_dagang_zhuisu_trd.sin_out.connect(self.text_display) #信号绑定输出的区域
-        self.pushButton_5.clicked.connect(self.creat_shuoming_zhuisu_btn) #点击按钮执行线程
+        self.create_dagang_zhuisu_trd = create_dagang_zhuisu(self) 
+        self.create_dagang_zhuisu_trd.sin_out.connect(self.text_display) 
+        self.pushButton_5.clicked.connect(self.creat_shuoming_zhuisu_btn) 
 
-        ##连接大纲追溯
-        self.create_shuoming_zhuisu_trd = create_shuoming_zhuisu(self)  # 生成大纲追溯的线程
-        self.create_shuoming_zhuisu_trd.sin_out.connect(self.text_display)  # 信号绑定输出的区域
-        self.pushButton_6.clicked.connect(self.creat_dagang_zhuisu_btn)  # 点击按钮执行线程
+        ##连接说明追踪线程
+        self.create_shuoming_zhuisu_trd = create_shuoming_zhuisu(self)  
+        self.create_shuoming_zhuisu_trd.sin_out.connect(self.text_display)  
+        self.pushButton_6.clicked.connect(self.creat_dagang_zhuisu_btn)  
+
+        ##连接报告追踪
+        self.create_baogao_zhuisu_trd = create_baogao_zhuisu(self)  
+        self.create_baogao_zhuisu_trd.sin_out.connect(self.text_display)  
+        self.pushButton_18.clicked.connect(self.create_baogao_zhuisu_btn) 
         
         ##连接单元追踪线程
-        self.create_danyuan_trd = create_danyuan(self) #生成大纲追溯的线程
-        self.create_danyuan_trd.sin_out.connect(self.text_display) #信号绑定输出的区域
-        self.pushButton_8.clicked.connect(self.creat_danyuan_btn) #点击按钮执行线程
+        self.create_danyuan_trd = create_danyuan(self) 
+        self.create_danyuan_trd.sin_out.connect(self.text_display) 
+        self.pushButton_8.clicked.connect(self.creat_danyuan_btn) 
         
         ##连接根据测试说明生成记录线程
-        self.create_jilu_trd = create_jilu(self) #生成大纲追溯的线程
-        self.create_jilu_trd.sin_out.connect(self.text_display) #信号绑定输出的区域
-        self.pushButton_12.clicked.connect(self.creat_jilu_btn) #点击按钮执行线程
+        self.create_jilu_trd = create_jilu(self) 
+        self.create_jilu_trd.sin_out.connect(self.text_display) 
+        self.pushButton_12.clicked.connect(self.creat_jilu_btn) 
+        
+        ##记录反向生成说明线程
+        self.create_shuomingfanxiang_trd = create_shuomingfanxiang(self) 
+        self.create_shuomingfanxiang_trd.sin_out.connect(self.text_display) 
+        self.pushButton_13.clicked.connect(self.creat_shuomingfanxiang_btn) 
+        
+        ##自动填充空白表格线程
+        self.create_zidong_trd = create_zidong(self) 
+        self.create_zidong_trd.sin_out.connect(self.text_display) 
+        self.pushButton_15.clicked.connect(self.creat_zidong_btn)
+        
+        ##清空单元格线程
+        self.clear_cell_trd = clear_cell(self) 
+        self.clear_cell_trd.sin_out.connect(self.text_display) 
+        self.pushButton_14.clicked.connect(self.clear_cell_btn)
+        
+        ##提取表格内容线程
+        self.get_content_trd = get_content(self) 
+        self.get_content_trd.sin_out.connect(self.text_display) 
+        self.pushButton_19.clicked.connect(self.get_content_btn)
         
         #自定义信号连接
         
         # 获取状态栏对象
         self.user_statusbar = self.statusBar()
         # 右下角窗口尺寸调整符号
-        self.user_statusbar.setSizeGripEnabled(False)
+        self.user_statusbar.setSizeGripEnabled(True)
         self.user_statusbar.setStyleSheet("QStatusBar.item{border:10px}")
         
         #~~~~~~~~~~~~~~~按钮连接函数~~~~~~~~~~~~~~~~
@@ -89,10 +117,13 @@ class userMain(QMainWindow,Ui_MainWindow):
         self.pushButton_4.clicked.connect(self.choose_docx_func)
         self.pushButton_7.clicked.connect(self.choose_docx_func)
         self.pushButton_11.clicked.connect(self.choose_docx_func)
+        self.pushButton_16.clicked.connect(self.choose_docx_func)
+        self.pushButton_17.clicked.connect(self.choose_docx_func)
         #清空显示区
         self.pushButton_9.clicked.connect(self.clear_textEdit_content)
         #显示帮助
         self.pushButton_10.clicked.connect(self.display_help)
+        
         #~~~~~~~~~~~~~~~导航栏按钮连接函数~~~~~~~~~~~~~~~~
         #显示关于本软件的菜单
         self.actionAbout.triggered.connect(self.display_about)
@@ -121,7 +152,7 @@ class userMain(QMainWindow,Ui_MainWindow):
         about_dlg.setupUi(dlg)
         dlg.show()
         dlg.exec_()
-        print("display_about")
+        print("显示关于界面")
         return
 
 
@@ -141,6 +172,16 @@ class userMain(QMainWindow,Ui_MainWindow):
     def creat_shuoming_zhuisu_btn(self):
         self.create_shuoming_zhuisu_trd.start()
         self.tabWidget.setEnabled(False)
+
+# 提取单元格标题右侧内容线程启动函数
+    def create_baogao_zhuisu_btn(self):
+        self.create_baogao_zhuisu_trd.start()
+        self.tabWidget.setEnabled(False)
+
+# 记录反向生成说明线程
+    def creat_shuomingfanxiang_btn(self):
+        self.create_shuomingfanxiang_trd.start()
+        self.tabWidget.setEnabled(False)
         
 # 单元测试报告转换为我们的用例线程
     def creat_danyuan_btn(self):
@@ -151,6 +192,21 @@ class userMain(QMainWindow,Ui_MainWindow):
     def creat_jilu_btn(self):
         self.create_jilu_trd.start()
         self.tabWidget.setEnabled(False)
+        
+# 自动填充线程
+    def creat_zidong_btn(self):
+        self.create_zidong_trd.start()
+        self.tabWidget.setEnabled(False)
+        
+# 清空表格单元格内容
+    def clear_cell_btn(self):
+        self.clear_cell_trd.start()
+        self.tabWidget.setEnabled(False)
+
+# 提取单元格标题右侧内容线程启动函数
+    def get_content_btn(self):
+        self.get_content_trd.start()
+        self.tabWidget.setEnabled(False)
     
 #选择文档函数
     def choose_docx_func(self):
@@ -160,8 +216,15 @@ class userMain(QMainWindow,Ui_MainWindow):
         
 #关闭线程函数
     def stop_shuoming_thread(self):
-        self.create_shuoming_trd.terminate()
         self.tabWidget.setEnabled(True)
+        self.create_shuoming_trd.terminate()
+        self.create_dagang_zhuisu_trd.terminate()
+        self.create_shuoming_zhuisu_trd.terminate()
+        self.create_shuomingfanxiang_trd.terminate()
+        self.create_jilu_trd.terminate()
+        self.create_zidong_trd.terminate()
+        self.clear_cell_trd.terminate()
+        self.get_content_trd.terminate()
         print("停止线程成功！")
     
 #~~~~~~~~~~~~~~~~~~~~显示函数~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1093,7 +1156,7 @@ class create_jilu(QtCore.QThread):
         
     def run(self):
         #用来储存章节号转换
-        zhuan_dict = {'DC':'文档审查','SU':'功能测试','CR':'代码审查','SA':'静态分析','AC':'静态测试',\
+        zhuan_dict = {'DC':'文档审查','SU':'功能测试','CR':'代码审查','SA':'静态分析','AC':'性能测试',\
             'IO':'接口测试','SE':'安全性测试','BT':'边界测试','RE':'恢复性测试','ST':'强度测试',\
                 'AT':'余量测试','GUI':'人机交互界面测试','DP':'数据处理测试','JR':'兼容性测试',\
                     'LG':'逻辑测试'}
@@ -1253,5 +1316,523 @@ class create_jilu(QtCore.QThread):
             return
     
 ##################################################################################
-#根据测试记录反向生成说明（详细）
+#根据测试记录反向生成说明
 ##################################################################################
+class create_shuomingfanxiang(QtCore.QThread):
+    sin_out = pyqtSignal(str)
+
+    def __init__(self,parent):
+        super().__init__()
+        self.parent = parent
+        
+    def run(self):
+        #用来储存测试项DC等转换
+        zhuan_dict = {'DC':'文档审查','SU':'功能测试','CR':'代码审查','SA':'静态分析','AC':'性能测试',\
+            'IO':'接口测试','SE':'安全性测试','BT':'边界测试','RE':'恢复性测试','ST':'强度测试',\
+                'AT':'余量测试','GUI':'人机交互界面测试','DP':'数据处理测试','JR':'兼容性测试',\
+                    'LG':'逻辑测试'}
+        
+        self.sin_out.emit("进入测试记录转说明......")
+        self.sin_out.emit("开始转换......")
+        #如果没有选择文件路径则退出
+        if not self.parent.open_file_name:
+            self.sin_out.emit('nofile')
+            self.parent.tabWidget.setEnabled(True)
+            return
+        pythoncom.CoInitialize()
+        self.sin_out.emit('打开测试记录文件...')
+        self.w = DispatchEx('Word.Application')
+        #self.w.visible=True
+        self.w.DisplayAlerts = 0
+        try:
+            jilufile = self.w.Documents.Open(self.parent.open_file_name[0])
+        except:
+            self.sin_out.emit('open failed:选择的文档')
+            self.w.Quit()
+            pythoncom.CoUninitialize()
+            self.parent.tabWidget.setEnabled(True)
+            return
+        
+        self.sin_out.emit('复制测试说明文档模板到本程序所在目录...')
+        curpath = Path.cwd() / 'need'
+        shuoming_path_tmp = curpath / 'document_templates' / '反向测试说明模板.docx'
+        print(shuoming_path_tmp)
+        if shuoming_path_tmp.is_file():
+            self.sin_out.emit('已检测到有说明模板文件...')
+        else:
+            self.sin_out.emit('open failed:选择的文档')
+            return
+        #创建一个字典来储存单个用例
+        data_list = []
+        #获取表格数量
+        try:
+            csx_tb_count = jilufile.Tables.Count
+            self.sin_out.emit('total:'+ str(csx_tb_count))
+        except:
+            self.sin_out.emit('不存在表格！')
+            QMessageBox.warning(self.parent,'出错了','测试说明文档格式错误或者没有正确表格')
+            try:
+                jilufile.Close()
+            except:
+                pass
+            self.w.Quit()
+            pythoncom.CoUninitialize()
+            self.parent.tabWidget.setEnabled(True)
+            return
+        
+        #初始化表格外全局变量
+        is_fire_su = ''
+        is_type_su = ''
+        for i in range(csx_tb_count):
+            self.sin_out.emit(str(i))
+            self.sin_out.emit(f"正在处理第{str(i+1)}个表格")
+            if jilufile.Tables[i].Rows.Count > 2:
+                if jilufile.Tables[i].Cell(2, 1).Range.Text.find('测试用例名称') != -1:
+                    #将表格中信息全部先拿出来
+                    try:
+                        jilufile.Tables[i].Rows.First.Select()
+                        zhangjieming = self.w.Selection.Bookmarks("\headinglevel").\
+                            Range.Paragraphs(1).Range.Text.rstrip('\r')
+                        zhangjiehao = self.w.Selection.Bookmarks("\headinglevel").\
+                            Range.Paragraphs(1).Range.ListFormat.ListString
+                        mingcheng = jilufile.Tables[i].Cell(2, 2).Range.Text[:-2]
+                        biaoshi = jilufile.Tables[i].Cell(2, 4).Range.Text[:-2]
+                        self.sin_out.emit(f"正在处理{biaoshi}-用例{mingcheng}")
+                        zhuizong = jilufile.Tables[i].Cell(3,2).Range.Text[:-2]
+                        zongsu = jilufile.Tables[i].Cell(4,2).Range.Text[:-2]
+                        chushi = jilufile.Tables[i].Cell(5,2).Range.Text[:-2]
+                        qianti = jilufile.Tables[i].Cell(6,2).Range.Text[:-2]
+                        
+                        #缓存一个data数据
+                        data = {'mingcheng':'','biaoshi':'','zhuizong':'','is_first':'0',\
+                            'zongsu':'','chushi':'','qianti':'','zuhe':[],'is_begin':'0',\
+                                'csx_type':'','csx_mingcheng':'','renyuan':''}
+                        #获取步骤和预期
+                        step_count = jilufile.Tables[i].Rows.Count - 12
+                        #获取人员信息
+                        data['renyuan'] = jilufile.Tables[i].Cell(10+step_count,2).Range.Text[:-2]
+                        for j in range(step_count):
+                            buzhou_dict = {'buzhou':"",'yuqi':"",'xuhao':''}
+                            buzhou_dict['buzhou'] = jilufile.Tables[i].Cell(j+9,2).Range.Text[:-2]
+                            buzhou_dict['yuqi'] = jilufile.Tables[i].Cell(j+9,3).Range.Text[:-2]
+                            buzhou_dict['xuhao'] = str(j+1)
+                            data['zuhe'].append(buzhou_dict)
+                        
+                        #开始判断当前是否为测试项的第一个，如果是第一个则is_first改为1
+                        if is_fire_su != zhangjieming:
+                            is_fire_su = zhangjieming
+                            data['is_first'] = '1'
+                        #判断测试类型，这里从标识里面获取
+                        biaoshi_list = biaoshi.split("_")
+                        print('当前取的类型列表分割：',biaoshi_list)
+                        if len(biaoshi_list) >= 4:
+                            biaoshi_tmp = biaoshi_list[-3]
+                        else:
+                            biaoshi_tmp = biaoshi_list[1]
+                        if biaoshi_tmp != is_type_su:
+                            is_type_su = biaoshi_tmp
+                            data['is_begin'] = '1'
+                            if zhuan_dict[biaoshi_tmp] == '文档审查' or  zhuan_dict[biaoshi_tmp] == '代码审查' or \
+                                zhuan_dict[biaoshi_tmp] == '静态分析':
+                                data['is_first'] = '0'
+                        
+                        #data补全
+                        data['mingcheng'] = mingcheng
+                        data['biaoshi'] = biaoshi
+                        data['zhuizong'] = zhuizong.replace('\r','\n')
+                        data['zongsu'] = zongsu
+                        data['chushi'] = chushi
+                        data['qianti'] = qianti
+                        data['csx_type'] = zhuan_dict[biaoshi_tmp]
+                        data['csx_mingcheng'] = zhangjieming
+                        data_list.append(data)
+                        self.sin_out.emit("处理完毕{}用例".format(biaoshi))
+                    except:
+                        self.sin_out.emit("第{}个表格处理失败，请检查".format(str(i+1)))
+                        pass
+                        
+                else:
+                    self.sin_out.emit("该表格生成错误，请检查是否存在用例序号，每个用例必须有序号且必须包含【记录】两个字...")
+            else:
+                self.sin_out.emit("该表格生成错误，请检查表格是否存在并大于2行...")  
+            
+        #关闭大纲文档（因为以及提取完毕）
+        try:
+            jilufile.Close()
+            self.w.Quit()
+            pythoncom.CoUninitialize()
+        except:
+            self.sin_out.emit('function fail')
+            self.w.Quit()
+            pythoncom.CoUninitialize()
+            return
+    
+        #打开模板文件进行渲染，然后就是用docxtpl生成用例
+        try:
+            tpl_path = Path.cwd() / "need" / "document_templates" / "反向测试说明模板.docx"
+            self.sin_out.emit('导入模板文件路径为：' + str(tpl_path))
+            tpl = DocxTemplate(tpl_path) #模板导入成功
+            
+        except:
+            QMessageBox.warning(self.parent,"出错了","导入模板出错请检查模板文件是否存在或名字不正确")
+            return
+        
+        #开始渲染模板文件-有2层循环
+        try:
+            context = {
+                "tables":data_list,
+            }
+            tpl.render(context)
+            tpl.save("反向生成的说明文档.docx")
+            QMessageBox.warning(self.parent,"生成文档成功","请查看当前工具根目录（反向生成的说明文档.docx）,【注意】生成\
+                    的文件章节号中存在错误，请自行添加二级章节号，并且将三级章节号降级处理")
+            self.sin_out.emit('stopthread')
+        except:
+            QMessageBox.warning(self.parent,"生成文档出错","生成文档错误，请确认模板文档是否已打开或格式错误")
+            self.sin_out.emit('stopthread')
+            return
+    
+##################################################################################
+#自动填充单元格线程
+##################################################################################
+class create_zidong(QtCore.QThread):
+    sin_out = pyqtSignal(str)
+
+    def __init__(self,parent):
+        super().__init__()
+        self.parent = parent
+
+    def run(self):
+        self.sin_out.emit('开始...')
+        if self.parent.open_file_name == '':
+            self.sin_out.emit('请点击“选择文档”按钮选择要填充的文档')
+            self.parent.tabWidget.setEnabled(True)
+            QMessageBox.warning(self.parent,'出错了！','请选择要填充的文档！')
+            return
+        try:
+            t_s_file = docx.Document(self.parent.open_file_name[0])
+        except:
+            self.sin_out.emit('open failed:选择的文档')
+            self.parent.tabWidget.setEnabled(True)
+            QMessageBox.warning(self.parent,'出错了！','打开选择的文档失败，请确认文档类型为docx，且未被打开！')
+            return
+        if self.parent.lineEdit_9.text() == '':
+            self.sin_out.emit('单元格左侧不能为空！!!!')
+            self.parent.tabWidget.setEnabled(True)
+            QMessageBox.warning(self.parent,'出错了！','单元格标题不能为空！')
+            return
+        if self.parent.lineEdit_10.text() == '':
+            self.sin_out.emit('确定填充内容为空吗？填充内容为空相当于清空操作。可直接点击清空按钮！！')
+            self.parent.tabWidget.setEnabled(True)
+            QMessageBox.warning(self.parent,'警告！','确定填充内容为空吗？填充内容为空相当于清空操作。可点击清空按钮！！')
+            return
+        tmp_fill = self.parent.lineEdit_11.text()
+        if tmp_fill == '':
+            tmp_fill = str(len(t_s_file.tables))
+
+        if (tmp_fill.strip().isdigit()) and (int(tmp_fill.strip()) < len(
+                t_s_file.tables)):
+            tmp_ran = int(tmp_fill)
+        else:
+            tmp_ran = len(t_s_file.tables)
+
+        tmp_fillnum = 0
+        k = 0
+
+        self.sin_out.emit('total:' + str(tmp_ran))
+
+        self.parent.progressBar.setRange(0,tmp_ran-1)
+        for ft1 in t_s_file.tables:
+            k += 1
+            self.sin_out.emit(str(k))
+            self.parent.progressBar.setValue(k)
+            tmp_row = 0
+            for r in ft1.rows:
+                tmpflag = 0
+                tmp_column = 0
+                for cell in r.cells:
+                    if cell.text.strip() == self.parent.lineEdit_9.text():
+                        while ft1.cell(tmp_row, tmp_column).text.strip() == self.parent.lineEdit_9.text():
+                            tmp_column += 1
+                        #这里如果需要替换还是不替换
+                        if ft1.cell(tmp_row, tmp_column).text == '':
+                            ft1.cell(tmp_row, tmp_column).text = self.parent.lineEdit_10.text()
+                            tmp_fillnum += 1
+                        else:
+                            pass
+                        tmpflag = 1
+                        break
+                    else:
+                        tmp_column += 1
+                if tmpflag == 1:
+                    break
+                tmp_row += 1
+            if tmp_fillnum >= int(tmp_fill):
+                break
+
+        try:
+            t_s_file.save(self.parent.open_file_name[0])
+            self.sin_out.emit('function success')
+            self.parent.tabWidget.setEnabled(True)
+            return
+        except:
+            self.parent.tabWidget.setEnabled(True)
+            self.sin_out.emit('function fail')
+            QMessageBox.information(self.parent,'','填充完成！')
+            return
+
+##################################################################################
+#清空单元格线程
+##################################################################################
+class clear_cell(QtCore.QThread):
+    sin_out = pyqtSignal(str)
+
+    def __init__(self,parent):
+        super().__init__()
+        self.parent = parent
+
+    def run(self):
+        self.sin_out.emit('开始...')
+        if self.parent.open_file_name == '':
+            self.sin_out.emit('请点击“选择文档”按钮选择要填充的文档')
+            self.parent.tabWidget.setEnabled(True)
+            QMessageBox.warning(self.parent,'出错了！','请选择要填充的文档！')
+            return
+        try:
+            t_s_file = docx.Document(self.parent.open_file_name[0])
+        except:
+            self.sin_out.emit('open failed:要填充的文档')
+            QMessageBox.warning(self.parent,'出错了！','打开选择的文档失败，请确认文档类型为docx，且未被打开！')
+            self.parent.tabWidget.setEnabled(True)
+            return
+        if self.parent.lineEdit_9.text() == '':
+            self.parent.tabWidget.setEnabled(True)
+            self.sin_out.emit('单元格标题不能为空！')
+            QMessageBox.warning(self.parent,'出错了！','单元格标题不能为空！')
+            return
+        tmp_tblcnt = len(t_s_file.tables)
+        k = 0
+        self.sin_out.emit('total:' + str(tmp_tblcnt))
+        for ft1 in t_s_file.tables:
+            k += 1
+            self.sin_out.emit(str(k))
+            tmp_row = 0
+            for r in ft1.rows:
+                tmpflag = 0
+                tmp_column = 0
+                for cell in r.cells:
+
+                    if cell.text.strip() == self.parent.lineEdit_9.text():
+                        while ft1.cell(tmp_row, tmp_column).text.strip(
+                        ) == self.parent.lineEdit_9.text():
+                            tmp_column += 1
+
+                        ft1.cell(tmp_row, tmp_column).text = ''
+                        tmpflag = 1
+                        break
+                    else:
+                        tmp_column += 1
+                if tmpflag == 1:
+                    break
+                tmp_row += 1
+        try:
+            t_s_file.save(self.parent.open_file_name[0])
+            self.sin_out.emit('function success')
+            self.parent.tabWidget.setEnabled(True)
+            return
+        except:
+            self.parent.tabWidget.setEnabled(True)
+            self.sin_out.emit('function fail')
+            QMessageBox.information(self.parent,'','清空单元格成功！')
+            return
+        
+##################################################################################
+#提取表格内容线程
+##################################################################################
+class get_content(QtCore.QThread):
+    sin_out = pyqtSignal(str)
+
+    def __init__(self,parent):
+        super().__init__()
+        self.parent = parent
+
+    #获取文档中表格内容函数
+    def run(self):
+        curpath = Path.cwd()
+        content_tmp = curpath / 'need' / 'document_templates' / 'get_content.docx'
+        shutil.copy(content_tmp, curpath)
+        content_tmp_path = curpath / 'get_content.docx'
+        print(content_tmp_path)
+        try:
+            #c_file = self.w.Documents.Add()
+            c_file = docx.Document(content_tmp_path)
+        except:
+            self.sin_out.emit('open failed:文档模板')
+            self.parent.tabWidget.setEnabled(True)
+            return
+
+        try:
+            s_file = docx.Document(self.parent.open_file_name[0])
+            s_tbls = s_file.tables
+        except:
+            self.sin_out.emit('open failed:选择的文档')
+            c_file.save(content_tmp_path)
+            self.parent.tabWidget.setEnabled(True)
+            return
+        #原来是5,6,7
+        if self.parent.lineEdit_12.text() == '' and self.parent.lineEdit_13.text() == '' and self.parent.lineEdit_14.text() == '':
+
+            self.sin_out.emit('warning:请至少填写一个要提取的内容的标题，\n标题为要提取的单元格的前一单元格中的内容!')
+            c_file.save(content_tmp_path)
+            s_file.save(self.parent.open_file_name[0])
+            self.parent.tabWidget.setEnabled(True)
+            return
+
+        line_list = [
+            self.parent.lineEdit_12.text(),
+            self.parent.lineEdit_13.text(),
+            self.parent.lineEdit_14.text()
+        ]
+        self.sin_out.emit('开始提取...')
+        rownum = 0
+        self.sin_out.emit('total:' + str(len(s_tbls)))
+        for stb in s_tbls:
+            c_file.tables[0].add_row()
+            rownum += 1
+            self.sin_out.emit(str(rownum))
+
+            row = 0
+            for r1 in stb.rows:
+                col = 0
+                for ce in r1.cells:
+                    if line_list[0] != '' and ce.text == line_list[0]:
+                        while stb.cell(row, col).text == line_list[0]:
+                            col += 1
+                        c_file.tables[0].cell(rownum,
+                                              0).text = stb.cell(row, col).text
+                        break
+                    col += 1
+                col = 0
+                for ce in r1.cells:
+                    if line_list[1] != '' and ce.text == line_list[1]:
+                        while stb.cell(row, col).text == line_list[1]:
+                            col += 1
+                        c_file.tables[0].cell(rownum,
+                                              1).text = stb.cell(row, col).text
+                        break
+                    col += 1
+                col = 0
+                for ce in r1.cells:
+                    if line_list[2] != '' and ce.text == line_list[2]:
+                        while stb.cell(row, col).text == line_list[2]:
+                            col += 1
+                        c_file.tables[0].cell(rownum,
+                                              2).text = stb.cell(row, col).text
+                        break
+                    col += 1
+                row += 1
+        try:
+            c_file.save(content_tmp_path)
+            s_file.save(self.parent.open_file_name[0])
+            self.sin_out.emit('function success')
+            self.sin_out.emit('生成文件名为(get_content.docx)，在根目录下查看')
+            self.parent.tabWidget.setEnabled(True)
+            return
+        except:
+            self.sin_out.emit('function fail')
+            self.parent.tabWidget.setEnabled(True)
+            return
+
+##################################################################################
+#测评报告追溯表
+################################################################################## 
+class create_baogao_zhuisu(QtCore.QThread):
+    sin_out = pyqtSignal(str)
+
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+
+    def run(self):
+        self.sin_out.emit("进入报告追溯线程......")
+        self.sin_out.emit("开始填写报告追溯表......")
+
+        # 如果没有选择文件
+        if not self.parent.open_file_name:
+            self.sin_out.emit('nofile')
+            self.parent.tabWidget.setEnabled(True)
+            return
+        self.sin_out.emit('打开测试记录文档...')
+        # 打开word应用
+        try:
+            doc_path = self.parent.open_file_name[0]
+            doc = Document(doc_path)
+        except:
+            self.sin_out.emit('open failed:选择的文档')
+            self.parent.tabWidget.setEnabled(True)
+            return
+        
+        self.sin_out.emit('已正确打开说明文档...')
+        curpath = Path.cwd() / 'need'
+        zhuisu_path_tmp = curpath / 'document_templates' / '报告追踪模板.docx'
+        if zhuisu_path_tmp.is_file():
+            self.sin_out.emit('已检测到有报告追溯模板文件...')
+        else:
+            self.sin_out.emit('open failed:选择的文档')
+            return
+
+        # 创建个列表放数据
+        data_list = []
+        # 由于docx的是列表，所以直接len函数统计count
+        count = len(doc.tables)
+        self.sin_out.emit('total:' + str(count))
+        k = 0
+        for tb in doc.tables:
+            k += 1
+            self.sin_out.emit('total:' + str(k))
+            #注意docx处理方式不一样从0开始，并且要算总行数
+            try:
+                if tb.cell(1,1).text.find('测试用例名称') != -1:
+                    data = {'yongli_ming':'','yongli_biaoshi':'','yongli_qingkuang':'','beizhu':''}
+                    data['yongli_ming'] = tb.cell(1,4).text
+                    data['yongli_biaoshi'] = tb.cell(1,8).text
+                    wenti = tb.rows[-2].cells[2]
+                    print('提取出来的信息：',wenti.text)
+                    if wenti.text == '/' or wenti.text == '':
+                        data['yongli_qingkuang'] = '通过'
+                        data['beizhu'] = '/'
+                    else:
+                        data['yongli_qingkuang'] = '不通过'
+                        data['beizhu'] = wenti.text
+                    self.sin_out.emit(f'处理完毕({tb.cell(1,8).text})用例..')
+                    data_list.append(data)
+                else:
+                    self.sin_out.emit(f'当前表格({tb.cell(1,8).text})用例无法识别请检查')
+            except:
+                self.sin_out.emit(f'处理第{k}个表格失败，请检查该表格...')
+                pass
+
+        try:
+            tpl_path = Path.cwd() / "need" / "document_templates" / '报告追踪模板.docx'
+            self.sin_out.emit('导入模板文件路径为：' + str(tpl_path))
+            tpl = DocxTemplate(tpl_path)  # 模板导入成功
+
+        except:
+            QMessageBox.warning(self.parent, "出错了", "导入模板出错请检查模板文件是否存在或名字不正确")
+            return
+
+        # 开始渲染模板文件
+        print(data_list)
+        try:
+            context = {
+                "tables": data_list,
+            }
+            tpl.render(context)
+            tpl.save("说明追踪文档.docx")
+            QMessageBox.about(self.parent, "生成文档成功", "请查看当前工具根目录（报告追踪文档.docx）")
+            self.sin_out.emit('stopthread')
+        except:
+            QMessageBox.warning(self.parent, "生成文档出错", "生成文档错误，请确认模板文档是否已打开或格式错误")
+            self.sin_out.emit('stopthread')
+            return
+ 
