@@ -130,6 +130,9 @@ class userMain(QMainWindow,Ui_MainWindow):
         #打开文件夹
         self.actionopen.triggered.connect(self.choose_docx_func)
         
+        if debug:
+            logging.debug("界面加载完成...")
+        
 #~~~~~~~~~~~~~~~~~~~~初始化直接运行的函数（也就是起始运行一次）~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 

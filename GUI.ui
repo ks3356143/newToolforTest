@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>804</width>
-    <height>584</height>
+    <width>826</width>
+    <height>619</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,16 @@
      <layout class="QVBoxLayout" name="verticalLayout_7">
       <item>
        <widget class="QTabWidget" name="tabWidget">
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tab">
          <attribute name="title">
@@ -33,8 +41,10 @@
              <widget class="QGroupBox" name="groupBox">
               <property name="font">
                <font>
-                <family>Mongolian Baiti</family>
+                <family>微软雅黑</family>
                 <pointsize>10</pointsize>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="title">
@@ -89,8 +99,10 @@
              <widget class="QGroupBox" name="groupBox_2">
               <property name="font">
                <font>
-                <family>Mongolian Baiti</family>
+                <family>微软雅黑</family>
                 <pointsize>10</pointsize>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="title">
@@ -138,8 +150,10 @@
              <widget class="QGroupBox" name="groupBox_4">
               <property name="font">
                <font>
-                <family>Mongolian Baiti</family>
+                <family>微软雅黑</family>
                 <pointsize>10</pointsize>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="title">
@@ -255,8 +269,10 @@
              <widget class="QGroupBox" name="groupBox_3">
               <property name="font">
                <font>
-                <family>Mongolian Baiti</family>
+                <family>微软雅黑</family>
                 <pointsize>10</pointsize>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="title">
@@ -314,8 +330,10 @@
              <widget class="QGroupBox" name="groupBox_5">
               <property name="font">
                <font>
-                <family>Mongolian Baiti</family>
+                <family>微软雅黑</family>
                 <pointsize>10</pointsize>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="title">
@@ -406,8 +424,10 @@
              <widget class="QGroupBox" name="groupBox_6">
               <property name="font">
                <font>
-                <family>Mongolian Baiti</family>
+                <family>微软雅黑</family>
                 <pointsize>10</pointsize>
+                <weight>50</weight>
+                <bold>false</bold>
                </font>
               </property>
               <property name="title">
@@ -550,7 +570,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>804</width>
+     <width>826</width>
      <height>23</height>
     </rect>
    </property>
