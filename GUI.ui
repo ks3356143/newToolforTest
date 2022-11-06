@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>804</width>
     <height>584</height>
    </rect>
   </property>
@@ -14,578 +14,544 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTabWidget" name="tabWidget">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>801</width>
-      <height>251</height>
-     </rect>
-    </property>
-    <property name="currentIndex">
-     <number>0</number>
-    </property>
-    <widget class="QWidget" name="tab">
-     <attribute name="title">
-      <string>文档生产工具</string>
-     </attribute>
-     <widget class="QGroupBox" name="groupBox">
-      <property name="geometry">
-       <rect>
-        <x>5</x>
-        <y>5</y>
-        <width>231</width>
-        <height>216</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Mongolian Baiti</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="title">
-       <string>大纲转说明-鉴定模板</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QPushButton" name="pushButton">
-         <property name="text">
-          <string>选择大纲文档</string>
-         </property>
+   <layout class="QVBoxLayout" name="verticalLayout_8">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_7">
+      <item>
+       <widget class="QTabWidget" name="tabWidget">
+        <property name="currentIndex">
+         <number>1</number>
+        </property>
+        <widget class="QWidget" name="tab">
+         <attribute name="title">
+          <string>文档生产工具</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_15">
+            <item>
+             <widget class="QGroupBox" name="groupBox">
+              <property name="font">
+               <font>
+                <family>Mongolian Baiti</family>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
+              <property name="title">
+               <string>大纲转说明-鉴定模板</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout">
+               <item>
+                <widget class="QPushButton" name="pushButton">
+                 <property name="text">
+                  <string>选择大纲文档</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout">
+                 <item>
+                  <widget class="QLabel" name="label">
+                   <property name="text">
+                    <string>设计人员：</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit"/>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_3">
+                 <property name="text">
+                  <string>测试记录转说明</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_2">
+                 <property name="text">
+                  <string>开始转换</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox_2">
+              <property name="font">
+               <font>
+                <family>Mongolian Baiti</family>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
+              <property name="title">
+               <string>追踪关系填写</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <item>
+                <widget class="QPushButton" name="pushButton_4">
+                 <property name="text">
+                  <string>选择文件</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_6">
+                 <property name="text">
+                  <string>大纲追踪关系填写（依据大纲文件）</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_5">
+                 <property name="text">
+                  <string>测试说明追踪填写（依据说明文件）</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_18">
+                 <property name="text">
+                  <string>测试报告追踪填写（依据记录文件）</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox_4">
+              <property name="font">
+               <font>
+                <family>Mongolian Baiti</family>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
+              <property name="title">
+               <string>根据说明生成测试记录</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_4">
+               <item>
+                <widget class="QPushButton" name="pushButton_11">
+                 <property name="text">
+                  <string>选择文件</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <item>
+                  <widget class="QLabel" name="label_4">
+                   <property name="text">
+                    <string>测试人员：</string>
+                   </property>
+                   <property name="textFormat">
+                    <enum>Qt::AutoText</enum>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit_4"/>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_3">
+                 <item>
+                  <widget class="QLabel" name="label_5">
+                   <property name="text">
+                    <string>监测人员：</string>
+                   </property>
+                   <property name="textFormat">
+                    <enum>Qt::AutoText</enum>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit_5"/>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <item>
+                  <widget class="QLabel" name="label_6">
+                   <property name="text">
+                    <string>测试时间：</string>
+                   </property>
+                   <property name="textFormat">
+                    <enum>Qt::AutoText</enum>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit_6"/>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
+                  <widget class="QPushButton" name="pushButton_12">
+                   <property name="text">
+                    <string>说明生成记录</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_13">
+                   <property name="text">
+                    <string>记录反向生成说明</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>设计人员：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_3">
-         <property name="text">
-          <string>测试记录转说明</string>
-         </property>
+        <widget class="QWidget" name="tab_2">
+         <attribute name="title">
+          <string>文档小工具</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_12">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_13">
+            <item>
+             <widget class="QGroupBox" name="groupBox_3">
+              <property name="font">
+               <font>
+                <family>Mongolian Baiti</family>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
+              <property name="title">
+               <string>UAS单元测试转换</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_9">
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_3">
+                 <item>
+                  <widget class="QLabel" name="label_2">
+                   <property name="text">
+                    <string>被测软件名：</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit_2"/>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_3">
+                   <property name="text">
+                    <string>被测软件标识：</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit_3"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_7">
+                   <property name="text">
+                    <string>请选择SAU报告文档</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_8">
+                   <property name="text">
+                    <string>开始转换</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox_5">
+              <property name="font">
+               <font>
+                <family>Mongolian Baiti</family>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
+              <property name="title">
+               <string>自动填充</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_10">
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_5">
+                 <item>
+                  <widget class="QPushButton" name="pushButton_16">
+                   <property name="text">
+                    <string>选择文档</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_6">
+                   <item>
+                    <widget class="QLabel" name="label_7">
+                     <property name="text">
+                      <string>单元格左侧：</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_9"/>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_7">
+                   <item>
+                    <widget class="QLabel" name="label_9">
+                     <property name="text">
+                      <string>填充的内容：</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_10"/>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_8">
+                   <item>
+                    <widget class="QLabel" name="label_10">
+                     <property name="text">
+                      <string>填充的数量：</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_11"/>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_9">
+                   <item>
+                    <widget class="QPushButton" name="pushButton_14">
+                     <property name="text">
+                      <string>清空单元格</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="pushButton_15">
+                     <property name="text">
+                      <string>填充</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox_6">
+              <property name="font">
+               <font>
+                <family>Mongolian Baiti</family>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
+              <property name="title">
+               <string>提取单元格标题右侧的单元格内容</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_11">
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_6">
+                 <item>
+                  <widget class="QPushButton" name="pushButton_17">
+                   <property name="text">
+                    <string>选择文档</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_10">
+                   <item>
+                    <widget class="QLabel" name="label_8">
+                     <property name="text">
+                      <string>单元格标题：</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_12"/>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_11">
+                   <item>
+                    <widget class="QLabel" name="label_11">
+                     <property name="text">
+                      <string>单元格标题：</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_13"/>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_12">
+                   <item>
+                    <widget class="QLabel" name="label_12">
+                     <property name="text">
+                      <string>单元格标题：</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_14"/>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_19">
+                   <property name="text">
+                    <string>点击提取</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_2">
-         <property name="text">
-          <string>开始转换</string>
-         </property>
+        <widget class="QWidget" name="tab_3">
+         <attribute name="title">
+          <string>其他页</string>
+         </attribute>
         </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QGroupBox" name="groupBox_2">
-      <property name="geometry">
-       <rect>
-        <x>230</x>
-        <y>5</y>
-        <width>236</width>
-        <height>216</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Mongolian Baiti</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="title">
-       <string>追踪关系填写</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QPushButton" name="pushButton_4">
-         <property name="text">
-          <string>选择文件</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_6">
-         <property name="text">
-          <string>大纲追踪关系填写（依据大纲文件）</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_5">
-         <property name="text">
-          <string>测试说明追踪填写（依据说明文件）</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_18">
-         <property name="text">
-          <string>测试报告追踪填写（依据记录文件）</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QGroupBox" name="groupBox_4">
-      <property name="geometry">
-       <rect>
-        <x>470</x>
-        <y>5</y>
-        <width>321</width>
-        <height>216</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Mongolian Baiti</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="title">
-       <string>根据说明生成测试记录</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
-       <item>
-        <widget class="QPushButton" name="pushButton_11">
-         <property name="text">
-          <string>选择文件</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>测试人员：</string>
-           </property>
-           <property name="textFormat">
-            <enum>Qt::AutoText</enum>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_4"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>监测人员：</string>
-           </property>
-           <property name="textFormat">
-            <enum>Qt::AutoText</enum>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_5"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>测试时间：</string>
-           </property>
-           <property name="textFormat">
-            <enum>Qt::AutoText</enum>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_6"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_5">
-         <item>
-          <widget class="QPushButton" name="pushButton_12">
-           <property name="text">
-            <string>说明生成记录</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_13">
-           <property name="text">
-            <string>记录反向生成说明</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="tab_2">
-     <attribute name="title">
-      <string>文档小工具</string>
-     </attribute>
-     <widget class="QGroupBox" name="groupBox_3">
-      <property name="geometry">
-       <rect>
-        <x>5</x>
-        <y>0</y>
-        <width>176</width>
-        <height>221</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Mongolian Baiti</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="title">
-       <string>UAS单元测试转换</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-      <widget class="QWidget" name="layoutWidget">
-       <property name="geometry">
-        <rect>
-         <x>5</x>
-         <y>25</y>
-         <width>166</width>
-         <height>192</height>
-        </rect>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextBrowser" name="textBrowser"/>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_14">
         <item>
-         <widget class="QLabel" name="label_2">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>618</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_9">
           <property name="text">
-           <string>被测软件名：</string>
+           <string>清空消息</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit_2"/>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_3">
+         <widget class="QPushButton" name="pushButton_10">
           <property name="text">
-           <string>被测软件标识：</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="lineEdit_3"/>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButton_7">
-          <property name="text">
-           <string>请选择SAU报告文档</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButton_8">
-          <property name="text">
-           <string>开始转换</string>
+           <string>显示帮助</string>
           </property>
          </widget>
         </item>
        </layout>
-      </widget>
-     </widget>
-     <widget class="QGroupBox" name="groupBox_5">
-      <property name="geometry">
-       <rect>
-        <x>185</x>
-        <y>0</y>
-        <width>254</width>
-        <height>221</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Mongolian Baiti</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="title">
-       <string>自动填充</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
-       <item>
-        <widget class="QPushButton" name="pushButton_16">
-         <property name="text">
-          <string>选择文档</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_6">
-         <item>
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>单元格左侧：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_9"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_7">
-         <item>
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>填充的内容：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_10"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_8">
-         <item>
-          <widget class="QLabel" name="label_10">
-           <property name="text">
-            <string>填充的数量：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_11"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_9">
-         <item>
-          <widget class="QPushButton" name="pushButton_14">
-           <property name="text">
-            <string>清空单元格</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_15">
-           <property name="text">
-            <string>填充</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QGroupBox" name="groupBox_6">
-      <property name="geometry">
-       <rect>
-        <x>445</x>
-        <y>0</y>
-        <width>346</width>
-        <height>221</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Mongolian Baiti</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="title">
-       <string>提取单元格标题右侧的单元格内容</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_6">
-       <item>
-        <widget class="QPushButton" name="pushButton_17">
-         <property name="text">
-          <string>选择文档</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_10">
-         <item>
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>单元格标题：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_12"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_11">
-         <item>
-          <widget class="QLabel" name="label_11">
-           <property name="text">
-            <string>单元格标题：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_13"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_12">
-         <item>
-          <widget class="QLabel" name="label_12">
-           <property name="text">
-            <string>单元格标题：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_14"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_13">
-         <item>
-          <widget class="QPushButton" name="pushButton_19">
-           <property name="text">
-            <string>点击提取</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="tab_3">
-     <attribute name="title">
-      <string>其他页</string>
-     </attribute>
-    </widget>
-   </widget>
-   <widget class="QTextBrowser" name="textBrowser">
-    <property name="geometry">
-     <rect>
-      <x>5</x>
-      <y>255</y>
-      <width>791</width>
-      <height>201</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QProgressBar" name="progressBar">
-    <property name="geometry">
-     <rect>
-      <x>5</x>
-      <y>490</y>
-      <width>791</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
-     </sizepolicy>
-    </property>
-    <property name="value">
-     <number>0</number>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_9">
-    <property name="geometry">
-     <rect>
-      <x>640</x>
-      <y>460</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>清空消息</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_10">
-    <property name="geometry">
-     <rect>
-      <x>720</x>
-      <y>460</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>显示帮助</string>
-    </property>
-   </widget>
+      </item>
+      <item>
+       <widget class="QProgressBar" name="progressBar">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="value">
+         <number>0</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>22</height>
+     <width>804</width>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
