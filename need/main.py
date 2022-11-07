@@ -916,8 +916,13 @@ class create_danyuan(QtCore.QThread):
                         zhuang_dict['zhuang_dingyi'] = danyuanfile.Tables[i].Cell(1, 3).Range.Text[:-2]
                         zhuang_dict['zhuang_fanhui'] = danyuanfile.Tables[i].Cell(2, 3).Range.Paragraphs(1).\
                             Range.Text[:-1]
-                        zhuang_dict['zhuang_fuzuoyong'] = danyuanfile.Tables[i].Cell(2, 3).\
-                            Range.Paragraphs(3).Range.Text[:-2].replace(" ", "")
+                        
+                        #副作用可能有多行
+                        fuzuoyong_temp = ''
+                        for count_fuzuo in range(len(danyuanfile.Tables[i].Cell(2, 3).Range.Paragraphs)-2):
+                            fuzuoyong_temp = fuzuoyong_temp + ';' + danyuanfile.Tables[i].Cell(2, 3).\
+                            Range.Paragraphs(count_fuzuo + 3).Range.Text[:-2].replace(" ", "")
+                        zhuang_dict['zhuang_fuzuoyong'] = fuzuoyong_temp
                         
                         data_list[yongli_num - 1]['zhuang'].append(zhuang_dict)
                     
