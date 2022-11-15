@@ -73,9 +73,7 @@ class zhuan_dlg(QDialog,zhuan.Ui_Dialog):
             else:
                 result = IEEE754_float_to_16(x,64)
                 self.lineEdit.setText(str(result))
-            
-            
-        
+             
 class userMain(QMainWindow,Ui_MainWindow):
     #自定义信号和槽
     
