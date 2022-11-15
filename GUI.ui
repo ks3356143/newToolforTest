@@ -587,6 +587,7 @@
      <string>工具</string>
     </property>
     <addaction name="actionAbout"/>
+    <addaction name="actionIEEE754"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -610,6 +611,11 @@
   <action name="action_3">
    <property name="text">
     <string>退出</string>
+   </property>
+  </action>
+  <action name="actionIEEE754">
+   <property name="text">
+    <string>IEEE转换工具</string>
    </property>
   </action>
  </widget>

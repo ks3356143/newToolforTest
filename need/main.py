@@ -20,14 +20,62 @@ import shutil
 import pythoncom
 #导入QT组件
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QMainWindow,QFileDialog,QMessageBox,QDialog
+from PyQt5.QtWidgets import QMainWindow,QFileDialog,QMessageBox,QDialog,QToolTip
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QFont
 #导入UI转换PY文件
 from need.Ui_GUI import Ui_MainWindow
-from need import about
+from need import about,zhuan
 #导入工具包文件-时间转换
 from need.utils import get_current_time,get_current_name,get_current_date,get_current_hour
+from need.zhuan_tool import IEEE754_16_to_float,IEEE754_float_to_16
 
+class zhuan_dlg(QDialog,zhuan.Ui_Dialog):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+        
+        if debug:
+            logging.debug("初始化转换程序:")
+            
+        #linetext信号连接
+        self.lineEdit.editingFinished.connect(self.shiliu_zhuan)
+        self.lineEdit_2.editingFinished.connect(self.shi_zhuan)
+        # 设置气泡提示信息
+        QToolTip.setFont(QFont("SansSerif", 12))
+        self.lineEdit.setToolTip("注意，编辑输入框后需要点击其他控件才进行转换，且格式不正确不转换")
+        self.lineEdit_2.setToolTip("注意，编辑输入框后需要点击其他控件才进行转换，且格式不正确不转换")
+        
+    def shiliu_zhuan(self):
+        #获取当前文字
+        x = self.lineEdit.text()
+        if len(x) == 8:
+            if self.radioButton.isChecked() == True: #说明选中了32位转换
+                result = IEEE754_16_to_float(x,32)
+                self.lineEdit_2.setText(str(result))
+        elif len(x) == 16:
+            if self.radioButton_2.isChecked() == True: #说明选中了64位转换
+                result = IEEE754_16_to_float(x,64)
+                self.lineEdit_2.setText(str(result))
+        
+    def shi_zhuan(self):
+        #获取当前文字
+        x = self.lineEdit_2.text()
+        #字符串转浮点数
+        if str.isdigit(x):
+            x = float(x)
+        elif str.isdigit(x.replace(".","")):
+            x = float(x)
+        if isinstance(x,float) == True:
+            if self.radioButton.isChecked() == True: #说明选中了32位转换
+                result = IEEE754_float_to_16(x,32)
+                self.lineEdit.setText(str(result))
+            else:
+                result = IEEE754_float_to_16(x,64)
+                self.lineEdit.setText(str(result))
+            
+            
+        
 class userMain(QMainWindow,Ui_MainWindow):
     #自定义信号和槽
     
@@ -129,6 +177,8 @@ class userMain(QMainWindow,Ui_MainWindow):
         self.actionAbout.triggered.connect(self.display_about)
         #打开文件夹
         self.actionopen.triggered.connect(self.choose_docx_func)
+        #打开IEEE754转换工具
+        self.actionIEEE754.triggered.connect(self.open_zhuan_tool)
         
         if debug:
             logging.debug("界面加载完成...")
@@ -156,6 +206,16 @@ class userMain(QMainWindow,Ui_MainWindow):
         dlg.show()
         dlg.exec_()
         print("显示关于界面")
+        return
+    
+    #显示IEEE754转换工具
+    def open_zhuan_tool(self):
+        dlg_zhuan = zhuan_dlg() #实例化界面
+        dlg_zhuan.show()
+        
+        
+        dlg_zhuan.exec_()
+        
         return
 
 
