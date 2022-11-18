@@ -5,6 +5,7 @@ from PyQt5 import QtCore,QtGui
 from need.main import userMain
 import qtmodern.styles
 import qtmodern.windows
+# from qt_material import apply_stylesheet
 #以下导入为打包导入所需-使用软件
 import json
 import docx
@@ -20,7 +21,10 @@ if __name__ == "__main__":
     # 设置任务栏软件图标
     app.setWindowIcon(QtGui.QIcon('Icon.png'))
     win = userMain()
-
+    ##以下是qt_material样式加载
+    # apply_stylesheet(app,theme = 'dark_teal.xml')
+    # win.show()
+    
     qtmodern.styles.light(app) #还有dark可以选择
     mw = qtmodern.windows.ModernWindow(win)
     mw.show()
