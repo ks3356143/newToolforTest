@@ -351,7 +351,7 @@ class create_shuoming(QtCore.QThread):
         
     def run(self):
         #用来储存测试项DC等转换
-        zhuan_dict = {'DC':'文档审查','SU':'功能测试','CR':'代码审查','SA':'静态分析','AC':'静态测试',\
+        zhuan_dict = {'DC':'文档审查','SU':'功能测试','CR':'代码审查','SA':'静态分析','AC':'性能测试',\
             'IO':'接口测试','SE':'安全性测试','BT':'边界测试','RE':'恢复性测试','ST':'强度测试',\
                 'AT':'余量测试','GUI':'人机交互界面测试','DP':'数据处理测试','JR':'兼容性测试',\
                     'LG':'逻辑测试'}
@@ -453,7 +453,7 @@ class create_shuoming(QtCore.QThread):
                             #填写一行情况下表格
                             data['mingcheng'] = dagangfile.Tables[i].Cell(1,2).Range.Text.rstrip('\r\x07')
                             #注意word中后面都有2个字符
-                            data['yongli_biaoshi'] = basic_biaoshi + "_1"
+                            data['yongli_biaoshi'] = (basic_biaoshi + "_1").replace('XQ','YL')
                             data['zhangjie'] = zhangjiehao
                             data['csx_mingcheng'] = zhangjieming
                             data['biaoshi'] = basic_biaoshi
@@ -514,8 +514,6 @@ class create_shuoming(QtCore.QThread):
                             #获取测试项综述-为该循环前不变内容
                             basic_zongshu = buzhou_list.pop(0).strip()
                             print('获取的测试用例综述是：',data["zongsu"])
-                            if len(buzhou_list) == len(yuqi_list):
-                                self.sin_out.emit('检测到格式预期和步骤的行数正确...')
                             
                             #获取字典中的buzhou和yuqi,找冒号
                             j = -1 #自制列表索引
@@ -528,10 +526,10 @@ class create_shuoming(QtCore.QThread):
                                     substrict_list.append(j)
                                     
                             #！！！注意差值计算步骤需要-1才是正确的步骤数量
-                            self.sin_out.emit("解析测试项序号"+ str(i) + "|检测到冒号所在行号为：" \
-                                + str(substrict_list))
-                            self.sin_out.emit("|检测到步骤总行数(序号)：" \
-                                + str(len(buzhou_list)))
+                            # self.sin_out.emit("解析测试项序号"+ str(i) + "|检测到冒号所在行号为：" \
+                            #     + str(substrict_list))
+                            # self.sin_out.emit("|检测到步骤总行数(序号)：" \
+                            #     + str(len(buzhou_list)))
                             
                             #循环用例个数
                             count_test = len(substrict_list)
