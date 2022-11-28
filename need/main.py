@@ -545,7 +545,7 @@ class create_shuoming(QtCore.QThread):
                                 
                                 #这里要求冒号最后一个
                                 data['mingcheng'] = buzhou_list[substrict_list[item]][:-1]
-                                data['yongli_biaoshi'] = basic_biaoshi + f'_{item+1}'
+                                data['yongli_biaoshi'] = (basic_biaoshi + f'_{item+1}').replace('XQ','YL')
                                 #常规填入
                                 data['zhangjie'] = zhangjiehao
                                 data['csx_mingcheng'] = zhangjieming
