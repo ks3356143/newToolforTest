@@ -468,7 +468,7 @@ class create_shuoming(QtCore.QThread):
                             #首先获取测试项标识，分割成列表
                             fenge = data['biaoshi'].split("_")
                             #获取当前测试项分割后的个数
-                            if len(fenge) < num_fenge:
+                            if len(fenge) <= num_fenge:
                                 if fenge[-1]!= is_fire_su:
                                     is_fire_su = fenge[-1]
                                     data['is_begin'] = "1"
@@ -1223,7 +1223,7 @@ class create_jilu(QtCore.QThread):
         zhuan_dict = {'DC':'文档审查','SU':'功能测试','CR':'代码审查','SA':'静态分析','AC':'性能测试',\
             'IO':'接口测试','SE':'安全性测试','BT':'边界测试','RE':'恢复性测试','ST':'强度测试',\
                 'AT':'余量测试','GUI':'人机交互界面测试','DP':'数据处理测试','JR':'兼容性测试',\
-                    'LG':'逻辑测试'}
+                    'LG':'逻辑测试','AZ':'安装性测试','TT':'时序测试','PA':'功耗分析'}
         
         self.sin_out.emit("进入根据说明转换记录线程......")
         self.sin_out.emit("开始转换......")
