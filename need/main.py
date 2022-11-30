@@ -468,16 +468,28 @@ class create_shuoming(QtCore.QThread):
                             #首先获取测试项标识，分割成列表
                             fenge = data['biaoshi'].split("_")
                             #获取当前测试项分割后的个数
-                            if len(fenge) <= num_fenge:
-                                if fenge[-1]!= is_fire_su:
-                                    is_fire_su = fenge[-1]
-                                    data['is_begin'] = "1"
-                                    data['csxbs'] = zhuan_dict[fenge[-1]]
-                            else:
+                            if len(fenge) == 4:
                                 if fenge[-2] != is_fire_su:
                                     is_fire_su = fenge[-2]
                                     data['is_begin'] = "1"
                                     data['csxbs'] = zhuan_dict[fenge[-2]]
+                            elif len(fenge) == 3:
+                                if fenge[-1] == 'DC' or fenge[-1] == 'CR' or fenge[-1] == 'SA':
+                                    if fenge[-1]!= is_fire_su:
+                                    is_fire_su = fenge[-1]
+                                    data['is_begin'] = "1"
+                                    data['csxbs'] = zhuan_dict[fenge[-1]]
+                                else:
+                                    if fenge[-2] != is_fire_su:
+                                    is_fire_su = fenge[-2]
+                                    data['is_begin'] = "1"
+                                    data['csxbs'] = zhuan_dict[fenge[-2]]
+                            else:
+                                if fenge[-1]!= is_fire_su:
+                                    is_fire_su = fenge[-1]
+                                    data['is_begin'] = "1"
+                                    data['csxbs'] = zhuan_dict[fenge[-1]]
+
                             if self.parent.lineEdit.text():
                                 data['renyuan'] = self.parent.lineEdit.text()
                             #将data加入data_list
@@ -567,10 +579,27 @@ class create_shuoming(QtCore.QThread):
                                 #判断是否为SU标题
                                 fenge = data['biaoshi'].split("_")
                                 #获取当前测试项分割后的个数
-                                if fenge[-2] != is_fire_su:
-                                    is_fire_su = fenge[-2]
-                                    data['is_begin'] = "1"
-                                    data['csxbs'] = zhuan_dict[fenge[-2]]
+                                if len(fenge) == 4:
+                                    if fenge[-2] != is_fire_su:
+                                        is_fire_su = fenge[-2]
+                                        data['is_begin'] = "1"
+                                        data['csxbs'] = zhuan_dict[fenge[-2]]
+                                elif len(fenge) == 3:
+                                    if fenge[-1] == 'DC' or fenge[-1] == 'CR' or fenge[-1] == 'SA':
+                                        if fenge[-1]!= is_fire_su:
+                                        is_fire_su = fenge[-1]
+                                        data['is_begin'] = "1"
+                                        data['csxbs'] = zhuan_dict[fenge[-1]]
+                                    else:
+                                        if fenge[-2] != is_fire_su:
+                                        is_fire_su = fenge[-2]
+                                        data['is_begin'] = "1"
+                                        data['csxbs'] = zhuan_dict[fenge[-2]]
+                                else:
+                                    if fenge[-1]!= is_fire_su:
+                                        is_fire_su = fenge[-1]
+                                        data['is_begin'] = "1"
+                                        data['csxbs'] = zhuan_dict[fenge[-1]]
                                 if self.parent.lineEdit.text():
                                     data['renyuan'] = self.parent.lineEdit.text()
                                 #加入data_list
