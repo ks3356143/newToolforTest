@@ -277,20 +277,16 @@ class userMain(QMainWindow,Ui_MainWindow):
         
 #关闭线程函数
     def stop_shuoming_thread(self):
-        self.tabWidget.setEnabled(True)
-        self.create_shuoming_trd.terminate()
-        self.create_dagang_zhuisu_trd.terminate()
-        self.create_shuoming_zhuisu_trd.terminate()
-        self.create_shuomingfanxiang_trd.terminate()
-        self.create_jilu_trd.terminate()
-        self.create_zidong_trd.terminate()
-        self.clear_cell_trd.terminate()
-        self.get_content_trd.terminate()
+        QMessageBox.warning(self, '处理完毕','文档处理完毕！')
         print("停止线程成功！")
     
 #~~~~~~~~~~~~~~~~~~~~显示函数~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def text_display(self, texttmp):
-        if texttmp[:10] == 'stopthread':
+        if texttmp[:9] == 'stoperror':
+            QMessageBox.warning(self, '处理完毕','文档处理完毕！')
+            return
+        
+        if texttmp[:11] == 'stopsuccess':
             self.stop_shuoming_thread()
             return
     
@@ -476,14 +472,14 @@ class create_shuoming(QtCore.QThread):
                             elif len(fenge) == 3:
                                 if fenge[-1] == 'DC' or fenge[-1] == 'CR' or fenge[-1] == 'SA':
                                     if fenge[-1]!= is_fire_su:
-                                    is_fire_su = fenge[-1]
-                                    data['is_begin'] = "1"
-                                    data['csxbs'] = zhuan_dict[fenge[-1]]
+                                        is_fire_su = fenge[-1]
+                                        data['is_begin'] = "1"
+                                        data['csxbs'] = zhuan_dict[fenge[-1]]
                                 else:
                                     if fenge[-2] != is_fire_su:
-                                    is_fire_su = fenge[-2]
-                                    data['is_begin'] = "1"
-                                    data['csxbs'] = zhuan_dict[fenge[-2]]
+                                        is_fire_su = fenge[-2]
+                                        data['is_begin'] = "1"
+                                        data['csxbs'] = zhuan_dict[fenge[-2]]
                             else:
                                 if fenge[-1]!= is_fire_su:
                                     is_fire_su = fenge[-1]
@@ -587,14 +583,14 @@ class create_shuoming(QtCore.QThread):
                                 elif len(fenge) == 3:
                                     if fenge[-1] == 'DC' or fenge[-1] == 'CR' or fenge[-1] == 'SA':
                                         if fenge[-1]!= is_fire_su:
-                                        is_fire_su = fenge[-1]
-                                        data['is_begin'] = "1"
-                                        data['csxbs'] = zhuan_dict[fenge[-1]]
+                                            is_fire_su = fenge[-1]
+                                            data['is_begin'] = "1"
+                                            data['csxbs'] = zhuan_dict[fenge[-1]]
                                     else:
                                         if fenge[-2] != is_fire_su:
-                                        is_fire_su = fenge[-2]
-                                        data['is_begin'] = "1"
-                                        data['csxbs'] = zhuan_dict[fenge[-2]]
+                                            is_fire_su = fenge[-2]
+                                            data['is_begin'] = "1"
+                                            data['csxbs'] = zhuan_dict[fenge[-2]]
                                 else:
                                     if fenge[-1]!= is_fire_su:
                                         is_fire_su = fenge[-1]
@@ -640,11 +636,9 @@ class create_shuoming(QtCore.QThread):
             }
             tpl.render(context)
             tpl.save("生成的说明文档.docx")
-            QMessageBox.warning(self.parent,"生成文档成功","请查看当前工具根目录（生成的说明文档.docx）")
-            self.sin_out.emit('stopthread')
+            self.sin_out.emit('stopsuccess')
         except:
-            QMessageBox.warning(self.parent,"生成文档出错","生成文档错误，请确认模板文档是否已打开或格式错误")
-            self.sin_out.emit('stopthread')
+            self.sin_out.emit('stoperror')
             return
         
 ##################################################################################
@@ -818,11 +812,10 @@ class create_dagang_zhuisu(QtCore.QThread):
             }
             tpl.render(context)
             tpl.save("生成的大纲追踪文档.docx")
-            QMessageBox.warning(self.parent,"生成文档成功","请查看当前工具根目录（生成的大纲追踪文档.docx）")
-            self.sin_out.emit('stopthread')
+            self.sin_out.emit('stopsuccess')
         except:
             QMessageBox.warning(self.parent,"生成文档出错","生成文档错误，请确认模板文档是否已打开或格式错误")
-            self.sin_out.emit('stopthread')
+            self.sin_out.emit('stoperror')
             return
         
 ##################################################################################
@@ -1037,11 +1030,9 @@ class create_danyuan(QtCore.QThread):
             }
             tpl.render(context)
             tpl.save("软件单元测试用例记录表.docx")
-            QMessageBox.warning(self.parent,"生成文档成功","请查看当前工具根目录（软件单元测试用例记录表.docx）")
-            self.sin_out.emit('stopthread')
+            self.sin_out.emit('stopsuccess')
         except:
-            QMessageBox.warning(self.parent,"生成文档出错","生成文档错误，请确认模板文档是否已打开或格式错误")
-            self.sin_out.emit('stopthread')
+            self.sin_out.emit('stoperror')
             return
  
 ##################################################################################
@@ -1121,7 +1112,7 @@ class create_shuoming_zhuisu(QtCore.QThread):
         data = {'dg_zhangjie': '', 'mingcheng': '','biaoshi': '', 'yongli':[],'index':0}
         for i in range(tb_count):
             self.sin_out.emit(str(i))
-            self.sin_out.emit("正在处理第{}个表格...".format(str(i+1)))
+            #self.sin_out.emit("正在处理第{}个表格...".format(str(i+1)))
             print("正在处理第{}个表格...".format(str(i+1)))
             # 准备填入的data
             data2 = {'yongli_ming':'','yongli_biaoshi':'','yongli_zongsu':''}
@@ -1132,10 +1123,10 @@ class create_shuoming_zhuisu(QtCore.QThread):
             zhui_temp = ''
             
             if shuomingfile.Tables[i].Rows.Count > 2:
-                # 注意win32com的Cell从1开始不是从0开始
-                if shuomingfile.Tables[i].Cell(1, 1).Range.Text.find('测试用例名称') != -1 or \
-                    shuomingfile.Tables[i].Cell(2, 1).Range.Text.find('测试用例名称') != -1:
-                    try:    
+                try:  
+                    # 注意win32com的Cell从1开始不是从0开始
+                    if shuomingfile.Tables[i].Cell(1, 1).Range.Text.find('测试用例名称') != -1 or \
+                        shuomingfile.Tables[i].Cell(2, 1).Range.Text.find('测试用例名称') != -1:
                         #取出cell(1,,1)的数据
                         table_heard = shuomingfile.Tables[i].Cell(1, 1).Range.Text
                         if table_heard.find("测试用例名称") != -1:
@@ -1199,11 +1190,11 @@ class create_shuoming_zhuisu(QtCore.QThread):
                                     csx_name = zhangjieming
                                     #清空data数据
                                     data = {'dg_zhangjie': '', 'mingcheng': '','biaoshi': '', 'yongli':[],'index':data_index}
-                                    self.sin_out.emit("已处理第{}个测试项...".format(data['index']))
-                                        
-                    except:
-                        self.sin_out.emit(f'$$$$$$$$$$$$第{str(i+1)}个表格，获取单元格内容不存在$$$$$$$$$$$$')
-                        pass
+                                    self.sin_out.emit("已处理第{}个测试项...".format(data['index']))                           
+                except:
+                    self.sin_out.emit(f'$$$$$$$$$$$$第{str(i+1)}个表格，获取单元格内容不存在$$$$$$$$$$$$')
+                    pass
+            
         # 最后关闭文档
         try:
             self.w.Quit()
@@ -1230,11 +1221,9 @@ class create_shuoming_zhuisu(QtCore.QThread):
             }
             tpl.render(context)
             tpl.save("说明追踪文档.docx")
-            QMessageBox.about(self.parent, "生成文档成功", "请查看当前工具根目录（说明追踪文档.docx）")
-            self.sin_out.emit('stopthread')
+            self.sin_out.emit('stopsuccess')
         except:
-            QMessageBox.warning(self.parent, "生成文档出错", "生成文档错误，请确认模板文档是否已打开或格式错误")
-            self.sin_out.emit('stopthread')
+            self.sin_out.emit('stoperror')
             return
         
 ##################################################################################
@@ -1401,11 +1390,9 @@ class create_jilu(QtCore.QThread):
             }
             tpl.render(context)
             tpl.save("生成的测试记录文档.docx")
-            QMessageBox.warning(self.parent,"生成文档成功","请查看当前工具根目录（生成的测试记录文档.docx）")
-            self.sin_out.emit('stopthread')
+            self.sin_out.emit('stopsuccess')
         except:
-            QMessageBox.warning(self.parent,"生成文档出错","生成文档错误，请确认模板文档是否已打开或格式错误")
-            self.sin_out.emit('stopthread')
+            self.sin_out.emit('stoperror')
             return
     
 ##################################################################################
@@ -1577,12 +1564,9 @@ class create_shuomingfanxiang(QtCore.QThread):
             }
             tpl.render(context)
             tpl.save("反向生成的说明文档.docx")
-            QMessageBox.warning(self.parent,"生成文档成功","请查看当前工具根目录（反向生成的说明文档.docx）,【注意】生成\
-                    的文件章节号中存在错误，请自行添加二级章节号，并且将三级章节号降级处理")
-            self.sin_out.emit('stopthread')
+            self.sin_out.emit('stopsuccess')
         except:
-            QMessageBox.warning(self.parent,"生成文档出错","生成文档错误，请确认模板文档是否已打开或格式错误")
-            self.sin_out.emit('stopthread')
+            self.sin_out.emit('stoperror')
             return
     
 ##################################################################################
@@ -1922,11 +1906,9 @@ class create_baogao_zhuisu(QtCore.QThread):
             }
             tpl.render(context)
             tpl.save("说明追踪文档.docx")
-            QMessageBox.about(self.parent, "生成文档成功", "请查看当前工具根目录（报告追踪文档.docx）")
-            self.sin_out.emit('stopthread')
+            self.sin_out.emit('stopsuccess')
         except:
-            QMessageBox.warning(self.parent, "生成文档出错", "生成文档错误，请确认模板文档是否已打开或格式错误")
-            self.sin_out.emit('stopthread')
+            self.sin_out.emit('stoperror')
             return
 
 ##################################################################################
