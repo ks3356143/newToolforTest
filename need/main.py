@@ -210,12 +210,8 @@ class userMain(QMainWindow,Ui_MainWindow):
     def open_zhuan_tool(self):
         dlg_zhuan = zhuan_dlg() #实例化界面
         dlg_zhuan.show()
-        
-        
         dlg_zhuan.exec_()
-        
         return
-
 
 #~~~~~~~~~~~~~~~~~~~~线程区域函数，用于启动线程~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #生成测试说明启动函数
@@ -277,17 +273,19 @@ class userMain(QMainWindow,Ui_MainWindow):
         
 #关闭线程函数
     def stop_shuoming_thread(self):
+        self.tabWidget.setEnabled(True)
         QMessageBox.warning(self, '处理完毕','文档处理完毕！')
         print("停止线程成功！")
     
 #~~~~~~~~~~~~~~~~~~~~显示函数~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def text_display(self, texttmp):
         if texttmp[:9] == 'stoperror':
-            QMessageBox.warning(self, '处理完毕','文档处理完毕！')
+            QMessageBox.warning(self, '处理完毕','文档处理失败！')
             return
         
         if texttmp[:11] == 'stopsuccess':
             self.stop_shuoming_thread()
+            self.tabWidget.setEnabled(True)
             return
     
         if texttmp[:6] == 'total:':
@@ -1295,69 +1293,71 @@ class create_jilu(QtCore.QThread):
         for i in range(csx_tb_count):
             self.sin_out.emit(str(i))
             self.sin_out.emit("正在处理第{}个表格".format(i+1))
-            if shuomingfile.Tables[i].Rows.Count > 2:
-                if shuomingfile.Tables[i].Cell(2, 1).Range.Text.find('测试用例名称') != -1:               
-                    #一个用例不变内容获取
-                    try:
-                        shuomingfile.Tables[i].Rows.First.Select()
-                        #获取章节名，用于判断
-                        zhangjieming = self.w.Selection.Bookmarks("\headinglevel").\
-                            Range.Paragraphs(1).Range.Text.rstrip('\r')
-                        #获取表格基本信息
-                        mingcheng = shuomingfile.Tables[i].Cell(2,2).Range.Text[:-2]
-                        biaoshi = shuomingfile.Tables[i].Cell(2,4).Range.Text[:-2]
-                        self.sin_out.emit(f"正在处理{biaoshi}用例{mingcheng}")
-                        zhuizong = shuomingfile.Tables[i].Cell(3,2).Range.Text[:-2]
-                        zongsu = shuomingfile.Tables[i].Cell(4,2).Range.Text[:-2]
-                        chushihua = shuomingfile.Tables[i].Cell(5,2).Range.Text[:-2]
-                        qianti = shuomingfile.Tables[i].Cell(6,2).Range.Text[:-2]
+            try:
+                if shuomingfile.Tables[i].Rows.Count > 2:
+                    if shuomingfile.Tables[i].Cell(2, 1).Range.Text.find('测试用例名称') != -1:               
+                        #一个用例不变内容获取
+                        try:
+                            shuomingfile.Tables[i].Rows.First.Select()
+                            #获取章节名，用于判断
+                            zhangjieming = self.w.Selection.Bookmarks("\headinglevel").\
+                                Range.Paragraphs(1).Range.Text.rstrip('\r')
+                            #获取表格基本信息
+                            mingcheng = shuomingfile.Tables[i].Cell(2,2).Range.Text[:-2]
+                            biaoshi = shuomingfile.Tables[i].Cell(2,4).Range.Text[:-2]
+                            self.sin_out.emit(f"正在处理{biaoshi}用例{mingcheng}")
+                            zhuizong = shuomingfile.Tables[i].Cell(3,2).Range.Text[:-2]
+                            zongsu = shuomingfile.Tables[i].Cell(4,2).Range.Text[:-2]
+                            chushihua = shuomingfile.Tables[i].Cell(5,2).Range.Text[:-2]
+                            qianti = shuomingfile.Tables[i].Cell(6,2).Range.Text[:-2]
 
-                        #缓存一个data数据
-                        data = {'mingcheng':'','biaoshi':'','zhuizong':'','is_first':'0',\
-                            'zongsu':'','chushihua':'','qianti':'','zuhe':[],'is_begin':'0',\
-                                'csx_type':'','csx_name':''}
-                        #获取步骤和预期
-                        step_count = shuomingfile.Tables[i].Rows.Count - 11
-                        for j in range(step_count):
-                            buzhou_dict = {'buzhou':"",'yuqi':"",'xuhao':''}
-                            buzhou_dict['buzhou'] = shuomingfile.Tables[i].Cell(j+9,2).Range.Text[:-2]
-                            buzhou_dict['yuqi'] = shuomingfile.Tables[i].Cell(j+9,3).Range.Text[:-2]
-                            buzhou_dict['xuhao'] = str(j+1)
-                            data['zuhe'].append(buzhou_dict)
-                            
-                        #开始判断当前是否为测试项的第一个，如果是第一个则is_first改为1
-                        if is_fire_su != zhangjieming:
-                            is_fire_su = zhangjieming
-                            data['is_first'] = '1'
-                            
-                        #判断测试类型，这里从标识里面获取
-                        biaoshi_list = biaoshi.split("_")
-                        print('当前取的类型列表分割：',biaoshi_list)
-                        if len(biaoshi_list) >= 4:
-                            biaoshi_tmp = biaoshi_list[-3]
-                        else:
-                            biaoshi_tmp = biaoshi_list[1]
-                        if biaoshi_tmp != is_type_su:
-                            is_type_su = biaoshi_tmp
-                            data['is_begin'] = '1'
-                            if zhuan_dict[biaoshi_tmp] == '文档审查' or  zhuan_dict[biaoshi_tmp] == '代码审查' or \
-                                zhuan_dict[biaoshi_tmp] == '静态分析':
-                                data['is_first'] = '0'
-                            
-                        #data补全
-                        data['mingcheng'] = mingcheng
-                        data['biaoshi'] = biaoshi
-                        data['zhuizong'] = zhuizong.replace('\r','\n')
-                        data['zongsu'] = zongsu
-                        data['chushihua'] = chushihua
-                        data['qianti'] = qianti
-                        data['csx_type'] = zhuan_dict[biaoshi_tmp]
-                        data['csx_name'] = zhangjieming
-                        data_list.append(data)
-                        self.sin_out.emit("处理完毕{}用例".format(biaoshi))
-                    except:
-                        self.sin_out.emit(f'错误！第{i+1}个表格处理失败!')
-                    
+                            #缓存一个data数据
+                            data = {'mingcheng':'','biaoshi':'','zhuizong':'','is_first':'0',\
+                                'zongsu':'','chushihua':'','qianti':'','zuhe':[],'is_begin':'0',\
+                                    'csx_type':'','csx_name':''}
+                            #获取步骤和预期
+                            step_count = shuomingfile.Tables[i].Rows.Count - 11
+                            for j in range(step_count):
+                                buzhou_dict = {'buzhou':"",'yuqi':"",'xuhao':''}
+                                buzhou_dict['buzhou'] = shuomingfile.Tables[i].Cell(j+9,2).Range.Text[:-2]
+                                buzhou_dict['yuqi'] = shuomingfile.Tables[i].Cell(j+9,3).Range.Text[:-2]
+                                buzhou_dict['xuhao'] = str(j+1)
+                                data['zuhe'].append(buzhou_dict)
+                                
+                            #开始判断当前是否为测试项的第一个，如果是第一个则is_first改为1
+                            if is_fire_su != zhangjieming:
+                                is_fire_su = zhangjieming
+                                data['is_first'] = '1'
+                                
+                            #判断测试类型，这里从标识里面获取
+                            biaoshi_list = biaoshi.split("_")
+                            print('当前取的类型列表分割：',biaoshi_list)
+                            if len(biaoshi_list) >= 4:
+                                biaoshi_tmp = biaoshi_list[-3]
+                            else:
+                                biaoshi_tmp = biaoshi_list[1]
+                            if biaoshi_tmp != is_type_su:
+                                is_type_su = biaoshi_tmp
+                                data['is_begin'] = '1'
+                                if zhuan_dict[biaoshi_tmp] == '文档审查' or  zhuan_dict[biaoshi_tmp] == '代码审查' or \
+                                    zhuan_dict[biaoshi_tmp] == '静态分析':
+                                    data['is_first'] = '0'
+                                
+                            #data补全
+                            data['mingcheng'] = mingcheng
+                            data['biaoshi'] = biaoshi
+                            data['zhuizong'] = zhuizong.replace('\r','\n')
+                            data['zongsu'] = zongsu
+                            data['chushihua'] = chushihua
+                            data['qianti'] = qianti
+                            data['csx_type'] = zhuan_dict[biaoshi_tmp]
+                            data['csx_name'] = zhangjieming
+                            data_list.append(data)
+                            self.sin_out.emit("处理完毕{}用例".format(biaoshi))
+                        except:
+                            self.sin_out.emit(f'错误！第{i+1}个表格处理失败!')
+            except:
+                self.sin_out.emit(f'错误！第{i+1}个表格处理失败!')       
                     
         #关闭大纲文档（因为以及提取完毕）
         try:
