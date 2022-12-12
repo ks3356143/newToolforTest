@@ -1181,20 +1181,18 @@ class create_shuoming_zhuisu(QtCore.QThread):
                                     dg_biaoshi_temp = re.sub(rules,'：',zhui_list[2])
                                     dg_biaoshi = dg_biaoshi_temp.split("：")[-1]
                                 #判断是否是新的测试项，如果是新的索引index加1，创建新dict进入
-                                if zhangjieming == csx_name:
-                                    data['yongli'].append(yongli_dict)
-                                #如果测试项是新的
-                                else:
-                                    data['yongli'].append(yongli_dict)
+                                if zhangjieming != csx_name:
+                                    data_list.append(data)
+                                    data_index = data['index'] + 1
+                                    data = {'dg_zhangjie': '', 'mingcheng': '','biaoshi': '', 'yongli':[],'index':data_index}
                                     data['dg_zhangjie'] = match_string
                                     data['mingcheng'] = match_ming
                                     data['biaoshi'] = dg_biaoshi
-                                    data_list.append(data)
-                                    data_index = data['index'] + 1
+                                    data['yongli'].append(yongli_dict)
                                     csx_name = zhangjieming
-                                    #清空data数据
-                                    data = {'dg_zhangjie': '', 'mingcheng': '','biaoshi': '', 'yongli':[],'index':data_index}
-                                    self.sin_out.emit("已处理第{}个测试项...".format(data['index']))                           
+                                    self.sin_out.emit("已处理第{}个测试项...".format(data['index'])) 
+                                else:
+                                    data['yongli'].append(yongli_dict)                           
                 except:
                     self.sin_out.emit(f'$$$$$$$$$$$$第{str(i+1)}个表格，获取单元格内容不存在$$$$$$$$$$$$')
                     pass
