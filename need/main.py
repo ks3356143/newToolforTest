@@ -150,7 +150,6 @@ class userMain(QMainWindow,Ui_MainWindow):
         self.pushButton_19.clicked.connect(self.get_content_btn)
         
         #自定义信号连接
-        
         # 获取状态栏对象
         self.user_statusbar = self.statusBar()
         # 右下角窗口尺寸调整符号
@@ -281,6 +280,7 @@ class userMain(QMainWindow,Ui_MainWindow):
     def text_display(self, texttmp):
         if texttmp[:9] == 'stoperror':
             QMessageBox.warning(self, '处理完毕','文档处理失败！')
+            self.tabWidget.setEnabled(True)
             return
         
         if texttmp[:11] == 'stopsuccess':
@@ -303,24 +303,30 @@ class userMain(QMainWindow,Ui_MainWindow):
             return
         if texttmp == 'no folder':
             QMessageBox.information(self, '没有选择文件夹', '还没有选择文件夹，点击"文件"菜单进行选择！')
+            self.tabWidget.setEnabled(True)
             return
         if texttmp.find('warning:') != -1:
             QMessageBox.information(self, 'WARNING', texttmp[8:])
+            self.tabWidget.setEnabled(True)
             return
 
         if texttmp.find('open failed:') != -1:
             QMessageBox.warning(
                 self, '打开文件失败',
                 '打开' + texttmp[12:] + '失败' + '请确认文档是否打开或者模板文件存在且后缀名为docx！')
+            self.tabWidget.setEnabled(True)
             return
         if texttmp == 'nofile':
             QMessageBox.information(self, '错误',
                                     '还没有选择文件（夹），点击"文件"菜单或者工具栏进行选择！')
+            self.tabWidget.setEnabled(True)
             return
         if texttmp.isdigit() == True:
             self.progressBar.setValue(int(texttmp))
+            self.tabWidget.setEnabled(True)
         else:
             self.textBrowser.append(texttmp)
+            self.tabWidget.setEnabled(True)
 
     def closeEvent(self, event):
         reply = QMessageBox.question(self, '提示',
@@ -1165,7 +1171,7 @@ class create_shuoming_zhuisu(QtCore.QThread):
                         if len(zhui_list) == 3:
                             if zhui_list[1].find("需求") != -1:
                                 #使用re模块正则表达式
-                                match_string = re.search("\d(.\d)+",zhui_list[1]).group()
+                                match_string = re.search("\d(.\d+)+",zhui_list[1]).group()
                                 match_ming = zhui_list[1].split(match_string)[-1]
                                 #使用re.sub模块替换为空
                                 rules = "[)(）（] "
@@ -1175,20 +1181,18 @@ class create_shuoming_zhuisu(QtCore.QThread):
                                     dg_biaoshi_temp = re.sub(rules,'：',zhui_list[2])
                                     dg_biaoshi = dg_biaoshi_temp.split("：")[-1]
                                 #判断是否是新的测试项，如果是新的索引index加1，创建新dict进入
-                                if zhangjieming == csx_name:
-                                    data['yongli'].append(yongli_dict)
-                                #如果测试项是新的
-                                else:
-                                    data['yongli'].append(yongli_dict)
+                                if zhangjieming != csx_name:
+                                    data_list.append(data)
+                                    data_index = data['index'] + 1
+                                    data = {'dg_zhangjie': '', 'mingcheng': '','biaoshi': '', 'yongli':[],'index':data_index}
                                     data['dg_zhangjie'] = match_string
                                     data['mingcheng'] = match_ming
                                     data['biaoshi'] = dg_biaoshi
-                                    data_list.append(data)
-                                    data_index = data['index'] + 1
+                                    data['yongli'].append(yongli_dict)
                                     csx_name = zhangjieming
-                                    #清空data数据
-                                    data = {'dg_zhangjie': '', 'mingcheng': '','biaoshi': '', 'yongli':[],'index':data_index}
-                                    self.sin_out.emit("已处理第{}个测试项...".format(data['index']))                           
+                                    self.sin_out.emit("已处理第{}个测试项...".format(data['index'])) 
+                                else:
+                                    data['yongli'].append(yongli_dict)                           
                 except:
                     self.sin_out.emit(f'$$$$$$$$$$$$第{str(i+1)}个表格，获取单元格内容不存在$$$$$$$$$$$$')
                     pass
