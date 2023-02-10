@@ -62,13 +62,19 @@ class zhuan_dlg(QDialog,zhuan.Ui_Dialog):
         #获取当前文字
         x = self.lineEdit_2.text()
         #字符串转浮点数
-        if str.isdigit(x):
+        # if str.isdigit(x):
+        #     x = float(x)
+        # elif str.isdigit(x.replace(".","")):
+        try:
             x = float(x)
-        elif str.isdigit(x.replace(".","")):
-            x = float(x)
+        except:
+            logging.debug('输入的内容无法转换为浮点数')
+            
         if isinstance(x,float) == True:
+            print('进入转换函数里面')
             if self.radioButton.isChecked() == True: #说明选中了32位转换
                 result = IEEE754_float_to_16(x,32)
+                print(result)
                 self.lineEdit.setText(str(result))
             else:
                 result = IEEE754_float_to_16(x,64)

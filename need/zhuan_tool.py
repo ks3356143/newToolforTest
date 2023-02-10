@@ -15,7 +15,7 @@ def IEEE754_float_to_16(x,byte_type):
 
 if __name__ == '__main__':
     ##测试程序##
-    x = '3F800000'
-    y = 0.13
+    x = 'BE051EB8'
+    y = -0.13
     print(IEEE754_16_to_float(x,32))
     print(IEEE754_float_to_16(y,32))
