@@ -926,7 +926,7 @@ class create_danyuan(QtCore.QThread):
                 self.parent.tabWidget.setEnabled(True)
                 pass
             
-            #找到函数名
+            #找到函数名,这里容易出问题
             if danyuanfile.Tables[i].Rows.Count > 2:
                 if danyuanfile.Tables[i].Cell(1, 1).Range.Text.find('功能描述') != -1: 
                     danyuanfile.Tables[i].Cell(1, 1).Range.Select()
@@ -941,17 +941,14 @@ class create_danyuan(QtCore.QThread):
                         
                     #再向上看2行
                     self.w.Selection.MoveUp()
-                    self.w.Selection.MoveUp()
-                    temp = self.w.Selection.Paragraphs(1).Range.Text[:2]
                     temp2 = self.w.Selection.Paragraphs(1).Range.Text[:-1]
-                    s2 = temp2.split(". ")[-1]
-                    if temp == "文件":
-                        if s2 != wenjian_duibi:
+                    s2 = temp2.split("\\")[-1]
+                    if '.' in temp2 and '\\' in temp2:
+                        print('@@@@@@:',s2)
+                        if s2 != wenjian_duibi:  #这里有改动
                             wenjian_duibi = s2
 
             #找章节号
-                    
-            
             if danyuanfile.Tables[i].Rows.Count > 2:
                 #注意win32com的Cell从1开始不是从0开始
                 if danyuanfile.Tables[i].Cell(1, 1).Range.Text.find('用例名称') != -1:  
@@ -1007,9 +1004,7 @@ class create_danyuan(QtCore.QThread):
                         zhuang_dict['zhuang_fuzuoyong'] = fuzuoyong_temp
                         
                         data_list[yongli_num - 1]['zhuang'].append(zhuang_dict)
-                    
-                    #气死了这里要写成[:-2]而不是[-2]!
-                          
+                        
         #最后关闭文档
         try:
             self.w.Quit()
