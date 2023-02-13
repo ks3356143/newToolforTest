@@ -945,7 +945,7 @@ class create_danyuan(QtCore.QThread):
                     if s1 != hanshuming_duibi:
                         hanshuming_duibi = s1
                         
-                    #再向上看2行
+                    #再向上看1行
                     self.w.Selection.MoveUp()
                     temp2 = self.w.Selection.Paragraphs(1).Range.Text[:-1]
                     s2 = temp2.split("\\")[-1]
