@@ -511,6 +511,35 @@
          <attribute name="title">
           <string>报告生成工具</string>
          </attribute>
+         <widget class="QGroupBox" name="groupBox_10">
+          <property name="geometry">
+           <rect>
+            <x>5</x>
+            <y>5</y>
+            <width>161</width>
+            <height>211</height>
+           </rect>
+          </property>
+          <property name="title">
+           <string>部件测试表格</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_19">
+           <item>
+            <widget class="QPushButton" name="pushButton_27">
+             <property name="text">
+              <string>选择UAS文件</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_28">
+             <property name="text">
+              <string>点击生成</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </widget>
       </item>

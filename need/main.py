@@ -29,6 +29,8 @@ from need import about,zhuan
 #导入工具包文件-时间转换
 from need.utils import get_current_time,get_current_name,get_current_date,get_current_hour
 from need.zhuan_tool import IEEE754_16_to_float,IEEE754_float_to_16
+#导入其他线程
+from need.threads import create_bujian
 
 class zhuan_dlg(QDialog,zhuan.Ui_Dialog):
     def __init__(self):
@@ -155,6 +157,11 @@ class userMain(QMainWindow,Ui_MainWindow):
         self.get_content_trd.sin_out.connect(self.text_display) 
         self.pushButton_19.clicked.connect(self.get_content_btn)
         
+        ##部件测试调用关系表格线程
+        self.create_bujian_trd = create_bujian(self) 
+        self.create_bujian_trd.sin_out.connect(self.text_display) 
+        self.pushButton_28.clicked.connect(self.create_bujian_btn)
+        
         #自定义信号连接
         # 获取状态栏对象
         self.user_statusbar = self.statusBar()
@@ -170,6 +177,7 @@ class userMain(QMainWindow,Ui_MainWindow):
         self.pushButton_11.clicked.connect(self.choose_docx_func)
         self.pushButton_16.clicked.connect(self.choose_docx_func)
         self.pushButton_17.clicked.connect(self.choose_docx_func)
+        self.pushButton_27.clicked.connect(self.choose_docx_func)
         #清空显示区
         self.pushButton_9.clicked.connect(self.clear_textEdit_content)
         #显示帮助
@@ -268,6 +276,11 @@ class userMain(QMainWindow,Ui_MainWindow):
 # 提取单元格标题右侧内容线程启动函数
     def get_content_btn(self):
         self.get_content_trd.start()
+        self.tabWidget.setEnabled(False)
+    
+# 部件测试提取调用启动线程函数
+    def create_bujian_btn(self):
+        self.create_bujian_trd.start()
         self.tabWidget.setEnabled(False)
     
 #选择文档函数
