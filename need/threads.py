@@ -83,8 +83,8 @@ class create_bujian(QtCore.QThread):
         
         
         yongli_num = 0
-        hanshuming = ''
         hanshuming_duibi = ''
+        alowFunctionInject = True
         for i in range(csx_tb_count):
             self.sin_out.emit(str(i))
             #准备填入的data
@@ -100,22 +100,28 @@ class create_bujian(QtCore.QThread):
                     s = self.w.Selection.Paragraphs(1).Range.Text[:-1]
                     s1 = s.split(". ")[-1]
                     #放入函数名比对
-                    if s1 != hanshuming_duibi:
-                        hanshuming_duibi = s1
+                    data['functionName'] = s1
+                    data_list.append(data)
+                    yongli_num += 1 #用例创建加一
 
             #找章节号~~~~~~~~~~~~~~~~~~~~~~~~
             if bujianfile.Tables[i].Rows.Count > 2:
                 if bujianfile.Tables[i].Cell(1, 1).Range.Text.find('用例名称') != -1:  
                     #函数名获取
-                    if hanshuming_duibi != hanshuming:
-                        hanshuming = hanshuming_duibi
-                    data['functionName'] = hanshuming_duibi
-                    data_list.append(data)
-                    yongli_num += 1 #用例创建加一
-                    
+                    if s1 != hanshuming_duibi:
+                        hanshuming_duibi = s1
+                        alowFunctionInject = True
+                    else:
+                        alowFunctionInject = False
+                            
                 elif bujianfile.Tables[i].Cell(1, 2).Range.Text.find('定义') != -1: 
                     #定义个桩函数dict
-                        data_list[yongli_num - 1]['subitem'].append(bujianfile.Tables[i].Cell(1, 3).Range.Text[:-2])
+                    if alowFunctionInject == True:
+                        temp = bujianfile.Tables[i].Cell(1, 3).Range.Text[:-2]
+                        temp1 = temp.split(" ")[1]
+                        temp2 = temp1.split("(")[0]
+                        data_list[yongli_num - 1]['subitem'].append(temp2)
+        
         
         print('最后data_list',data_list)    
         #最后关闭文档
