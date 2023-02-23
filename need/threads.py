@@ -118,8 +118,8 @@ class create_bujian(QtCore.QThread):
                     #定义个桩函数dict
                     if alowFunctionInject == True:
                         temp = bujianfile.Tables[i].Cell(1, 3).Range.Text[:-2]
-                        temp1 = temp.split(" ")[1]
-                        temp2 = temp1.split("(")[0]
+                        temp1 = temp.split("(")[0]
+                        temp2 = temp1.split(" ")[-1]
                         data_list[yongli_num - 1]['subitem'].append(temp2)
         
         
