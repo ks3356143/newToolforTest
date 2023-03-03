@@ -531,16 +531,40 @@ class create_shuoming(QtCore.QThread):
                             info_yuqi_list = list(filter(lambda x:x!="\x07" and x!="",info_ceshi_yuqi.split('\r')))
                             
                             #去掉括号和以下字符
-                            rule = "[()（）;；。]" #rule为去掉的符号（这个可以改TODO）
+                            rule = "[;；。]" #rule为去掉的符号（这个可以改TODO）
 
                             #初始化去掉rule的列表
                             buzhou_list = []
                             yuqi_list = []
                             
                             for item in info_buzhou_list:
-                                buzhou_list.append(re.sub(rule,"",item).strip(string.digits))
+                                index = item.find("(")
+                                if index != -1:
+                                    item = item[index+1:]
+                                index = item.find("（")
+                                if index != -1:
+                                    item = item[index+1:]
+                                index = item.find(")")
+                                if index != -1:
+                                    item = item[index+1:]
+                                index = item.find("）")
+                                if index != -1:
+                                    item = item[index+1:]
+                                buzhou_list.append(re.sub(rule,"",item).lstrip(string.digits))
                             for item in info_yuqi_list:
-                                yuqi_list.append(re.sub(rule,"",item).strip(string.digits))
+                                index = item.find("(")
+                                if index != -1:
+                                    item = item[index+1:]
+                                index = item.find("（")
+                                if index != -1:
+                                    item = item[index+1:]
+                                index = item.find(")")
+                                if index != -1:
+                                    item = item[index+1:]
+                                index = item.find("）")
+                                if index != -1:
+                                    item = item[index+1:]
+                                yuqi_list.append(re.sub(rule,"",item).lstrip(string.digits))
                             
                             #获取测试项综述-为该循环前不变内容
                             basic_zongshu = buzhou_list.pop(0).strip()
@@ -767,7 +791,7 @@ class create_dagang_zhuisu(QtCore.QThread):
                                     xuqiu_dict = {}
                                     if item.find("需求") != -1:
                                         try:
-                                            match_string = re.search("\d(.\d)+", item).group()
+                                            match_string = re.search("\d(.\d+)+", item).group()
                                             match_ming = item.split(match_string)[-1]
                                             xuqiu_dict['xq_zhangjie'] = match_string
                                             xuqiu_dict['xq_miaoshu'] = match_ming.lstrip(" ")
@@ -778,7 +802,7 @@ class create_dagang_zhuisu(QtCore.QThread):
                                             pass
                                     else:
                                         try:
-                                            match_string = re.search("\d(.\d)+", item).group()
+                                            match_string = re.search("\d(.\d+)+", item).group()
                                             match_ming = item.split(match_string)[-1]
                                             xuqiu_dict['xq_zhangjie'] = match_string
                                             xuqiu_dict['xq_miaoshu'] = match_ming.lstrip(" ")
