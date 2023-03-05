@@ -31,6 +31,8 @@ from need.utils import get_current_time,get_current_name,get_current_date,get_cu
 from need.zhuan_tool import IEEE754_16_to_float,IEEE754_float_to_16
 #导入其他线程
 from need.threads import create_bujian
+from need.fpga_record_thrend import create_FPGA_record
+from need.fpga_JtoS import create_FPGA_JtoS
 
 class zhuan_dlg(QDialog,zhuan.Ui_Dialog):
     def __init__(self):
@@ -162,6 +164,16 @@ class userMain(QMainWindow,Ui_MainWindow):
         self.create_bujian_trd.sin_out.connect(self.text_display) 
         self.pushButton_28.clicked.connect(self.create_bujian_btn)
         
+        ##FPGA记录填写表格线程
+        self.create_FPGA_record_trd = create_FPGA_record(self) 
+        self.create_FPGA_record_trd.sin_out.connect(self.text_display) 
+        self.pushButton_30.clicked.connect(self.create_FPGA_record_btn)
+        
+        ##FPGA记录转为说明线程
+        self.create_FPGA_JtoS_trd = create_FPGA_JtoS(self) 
+        self.create_FPGA_JtoS_trd.sin_out.connect(self.text_display) 
+        self.pushButton_32.clicked.connect(self.create_FPGA_JtoS_btn)
+        
         #自定义信号连接
         # 获取状态栏对象
         self.user_statusbar = self.statusBar()
@@ -178,6 +190,8 @@ class userMain(QMainWindow,Ui_MainWindow):
         self.pushButton_16.clicked.connect(self.choose_docx_func)
         self.pushButton_17.clicked.connect(self.choose_docx_func)
         self.pushButton_27.clicked.connect(self.choose_docx_func)
+        self.pushButton_29.clicked.connect(self.choose_docx_func)
+        self.pushButton_31.clicked.connect(self.choose_docx_func)
         #清空显示区
         self.pushButton_9.clicked.connect(self.clear_textEdit_content)
         #显示帮助
@@ -281,6 +295,16 @@ class userMain(QMainWindow,Ui_MainWindow):
 # 部件测试提取调用启动线程函数
     def create_bujian_btn(self):
         self.create_bujian_trd.start()
+        self.tabWidget.setEnabled(False)
+        
+# FPGA记录填写
+    def create_FPGA_record_btn(self):
+        self.create_FPGA_record_trd.start()
+        self.tabWidget.setEnabled(False)
+        
+# FPGA记录转说明
+    def create_FPGA_JtoS_btn(self):
+        self.create_FPGA_JtoS_trd.start()
         self.tabWidget.setEnabled(False)
     
 #选择文档函数
