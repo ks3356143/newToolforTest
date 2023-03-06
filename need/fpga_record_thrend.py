@@ -4,6 +4,10 @@ from PyQt5.QtCore import pyqtSignal
 from pathlib import *
 from docx import Document
 import re
+from docx.shared import Pt
+
+#常量
+TABLE_FONT_SIZE = Pt(10.5)
 
 class create_FPGA_record(QtCore.QThread):
     sin_out = pyqtSignal(str)
@@ -133,7 +137,13 @@ class create_FPGA_record(QtCore.QThread):
                 except:
                     self.sin_out.emit(f'第{num}个表格处理失败，请查看！！！')
                     pass     
-        
+            
+            # 设置字体
+            for row in table.rows:
+                for cell in row.cells:
+                    for paragraph in cell.paragraphs:
+                        for run in paragraph.runs:
+                            run.font.size = TABLE_FONT_SIZE
         # 保存文档
         try:
             doc.save('~新生产的fpga记录~.docx')
