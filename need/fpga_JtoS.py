@@ -2,7 +2,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
 from pathlib import *
 from PyQt5.QtWidgets import QMessageBox
-from docxtpl import DocxTemplate
+from docxtpl import DocxTemplate,InlineImage
 from docx import Document
 
 class create_FPGA_JtoS(QtCore.QThread):
@@ -73,6 +73,10 @@ class create_FPGA_JtoS(QtCore.QThread):
                         buzhou = {'shuru':'','yuqi':'','num':''}
                         buzhou['num'] = tables[i].rows[7+j].cells[0].text
                         buzhou['shuru'] = tables[i].rows[7+j].cells[2].text
+                        # 判断是否‘输入’单元格里有图片
+                        if len(tables[i].rows[7+j].cells[2]._element.findall('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}drawing'))>0:
+                            print('有图片')
+                            # buzhou['img'] = tables[i].rows[7+j].cells[2]._element.xpath('.//w:drawing', namespaces=tables[i].rows[7+j].cells[2]._element.nsmap)[0]
                         buzhou['yuqi'] = tables[i].rows[7+j].cells[4].text
                         data['step'].append(buzhou)
                     # 8、最后加入data_list
@@ -80,7 +84,6 @@ class create_FPGA_JtoS(QtCore.QThread):
                 except:
                     self.sin_out.emit(f'第{i}个表格处理错误！')
                     pass
-        print(data_list)
         #打开模板文件进行渲染，然后就是用docxtpl生成用例
         try:
             tpl_path = Path.cwd() / "need" / "document_templates" / "FPGA记录to说明模板.docx"
