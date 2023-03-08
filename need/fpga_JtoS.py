@@ -4,6 +4,8 @@ from pathlib import *
 from PyQt5.QtWidgets import QMessageBox
 from docxtpl import DocxTemplate,InlineImage
 from docx import Document
+from docx.table import Table
+import io
 
 class create_FPGA_JtoS(QtCore.QThread):
     sin_out = pyqtSignal(str)
@@ -21,6 +23,15 @@ class create_FPGA_JtoS(QtCore.QThread):
             self.parent.tabWidget.setEnabled(True)
             return
         
+        #打开模板文件进行渲染，然后就是用docxtpl生成用例
+        try:
+            tpl_path = Path.cwd() / "need" / "document_templates" / "FPGA记录to说明模板.docx"
+            self.sin_out.emit('导入模板文件路径为：' + str(tpl_path))
+            tpl = DocxTemplate(tpl_path) #模板导入成功
+            
+        except:
+            QMessageBox.warning(self.parent,"出错了","导入模板出错请检查模板文件是否存在或名字不正确")
+            return
 
         try:
             doc = Document(self.parent.open_file_name[0])
@@ -40,61 +51,79 @@ class create_FPGA_JtoS(QtCore.QThread):
             self.sin_out.emit('open failed:选择的文档')
             return
         
-        #创建一个字典来储存单个用例
-        data_list = []
         #获取表格数量
         tables = doc.tables
         tb_count = len(tables)
         self.sin_out.emit('total:'+ str(tb_count))
-        
-        for i in range(tb_count):
-            if tables[i].cell(0,0).text == '测试用例名称':
-                try:
-                    data = {'name':'','biaoshi':'','zhuizong':'','zongsu':'','init':'','qianti':'','step':[]}
-                    self.sin_out.emit(str(i+1))
-                    self.sin_out.emit(f'正在处理第{i+1}个表格')
-                    # 1、获取测试用例名称
-                    data['name'] = tables[i].cell(0,3).text
-                    # 2、获取用例标识
-                    data['biaoshi'] = tables[i].cell(0,8).text
-                    # 3、获取追踪关系 注意word中换行为\r\x07
-                    temp = tables[i].cell(1,3).text
-                    data['zhuizong'] = temp.replace("\n", "\r\x07")
-                    # 4、获取综述
-                    data['zongsu'] = tables[i].cell(2,3).text
-                    # 5、初始化
-                    data['init'] = tables[i].cell(3,3).text
-                    # 6、获取前提与约束
-                    data['qianti'] = tables[i].cell(4,3).text
-                    # 7、获取步骤信息-总行数减去12为步骤行数 
-                    row_count = len(tables[i].rows)
-                    step_count = row_count - 12
-                    for j in range(step_count):
-                        buzhou = {'shuru':'','yuqi':'','num':''}
-                        buzhou['num'] = tables[i].rows[7+j].cells[0].text
-                        buzhou['shuru'] = tables[i].rows[7+j].cells[2].text
-                        # 判断是否‘输入’单元格里有图片
-                        if len(tables[i].rows[7+j].cells[2]._element.findall('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}drawing'))>0:
-                            print('有图片')
-                            # buzhou['img'] = tables[i].rows[7+j].cells[2]._element.xpath('.//w:drawing', namespaces=tables[i].rows[7+j].cells[2]._element.nsmap)[0]
-                        buzhou['yuqi'] = tables[i].rows[7+j].cells[4].text
-                        data['step'].append(buzhou)
-                    # 8、最后加入data_list
+        #创建一个字典来储存单个用例
+        data_list = []
+        table_index = 1
+        #获取表格数量
+        for ele in doc._element.body.iter():
+            data = {'type':''}
+            if ele.tag.endswith('}p'):
+                elePstyle = ele.findall('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}pStyle')
+                if len(elePstyle) >= 1:
+                    # 获取标题级别
+                    rank = elePstyle[0].get('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val')
+                    t_ele = ele.findall('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t')
+                    title = ''
+                    for i in range(len(t_ele)):
+                        title = title + t_ele[i].text
+                    data['type'] = rank
+                    data['title'] = title
                     data_list.append(data)
-                except:
-                    self.sin_out.emit(f'第{i}个表格处理错误！')
-                    pass
-        #打开模板文件进行渲染，然后就是用docxtpl生成用例
-        try:
-            tpl_path = Path.cwd() / "need" / "document_templates" / "FPGA记录to说明模板.docx"
-            self.sin_out.emit('导入模板文件路径为：' + str(tpl_path))
-            tpl = DocxTemplate(tpl_path) #模板导入成功
-            
-        except:
-            QMessageBox.warning(self.parent,"出错了","导入模板出错请检查模板文件是否存在或名字不正确")
-            return
-        
-        #开始渲染模板文件-有2层循环
+            elif ele.tag.endswith('}tbl'):
+                data = {'name':'','biaoshi':'','zhuizong':[],'zongsu':'','init':'','qianti':'','step':[]}
+                data['type'] = 'table'
+                table = Table(ele, doc)
+                if table.cell(0,0).text == '测试用例名称':
+                    self.sin_out.emit(str(table_index))
+                    
+                    try:
+                        self.sin_out.emit(str(table_index))
+                        self.sin_out.emit(f'正在处理第{table_index}个表格')
+                        # 1、获取测试用例名称
+                        data['name'] = table.cell(0,3).text
+                        # 2、获取用例标识
+                        data['biaoshi'] = table.cell(0,8).text
+                        # 3、获取追踪关系 注意word中换行为\r\x07
+                        temp = table.cell(1,3)
+                        for tem in temp.paragraphs:
+                            data['zhuizong'].append(tem.text)
+                        # 4、获取综述
+                        data['zongsu'] = table.cell(2,3).text
+                        # 5、初始化
+                        data['init'] = table.cell(3,3).text
+                        # 6、获取前提与约束
+                        data['qianti'] = table.cell(4,3).text
+                        # 7、获取步骤信息-总行数减去12为步骤行数 
+                        row_count = len(table.rows)
+                        step_count = row_count - 12
+                        for j in range(step_count):
+                            buzhou = {'shuru':'','yuqi':'','num':'','image':'','is_image':'0'}
+                            buzhou['num'] = table.rows[7+j].cells[0].text
+                            buzhou['shuru'] = table.rows[7+j].cells[2].text
+                            cel = table.rows[7+j].cells[2]
+                            if len(cel._element.findall('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}drawing'))>0:
+                                img_ele = cel._element.xpath('.//pic:pic')[0]
+                                embed = img_ele.xpath('.//a:blip/@r:embed')[0]
+                                related_part = doc.part.related_parts[embed]
+                                image = related_part.image
+                                # blob属性就是二进制图片属性
+                                image_bytes = image.blob
+                                buzhou['image'] = InlineImage(tpl, io.BytesIO(image_bytes))
+                                buzhou['is_image'] = '1'
+                            buzhou['yuqi'] = table.rows[7+j].cells[4].text
+                            data['step'].append(buzhou)
+                        # 8、最后加入data_list
+                        data_list.append(data)
+                        table_index += 1
+                    except:
+                        self.sin_out.emit(f'第{table_index}个表格处理错误！')
+                        table_index += 1
+                        pass
+        # 开始渲染模板文件
         try:
             context = {
                 "tables":data_list,
