@@ -14,6 +14,8 @@ import six
 import docxcompose
 import lxml
 import markupsafe
+import win32api
+import win32com
 
 if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
